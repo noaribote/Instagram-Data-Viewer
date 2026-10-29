@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="FR-fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <title>Instagram Data Viewer</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/cmds.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css" integrity="sha512-x9WwyMYBnlXMNQ6kQ/Lyzu1NqIhLQKL5Oq6xByfXuRj7s9CskyCbLv/1IjqzJmXwFXWr0ov6jBV7Qbc0hh9nHg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body>
+
+    <nav class="FlexCenter">
+        <div class="brand FlexCenter2">
+            <img src="../assets/images/logo.png">
+            <h1>𝓘𝓷𝓼𝓽𝓪𝓰𝓻𝓪𝓶
+                <br><strong>Data Viewer</strong>
+            </h1>
+        </div>
+
+        <div id="divContentJSON">
+            <button><i class="fa-solid fa-database"></i>suivis</button>
+            <button><i class="fa-solid fa-database"></i>followers</button>
+        </div>
+
+        <button class="trashData">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            Libérer de l'espace
+            <strong>(<span id="qteGO">0,00</span>&nbsp;Go)</strong>
+        </button>
+    </nav>
+    <section id="primary-sec" class="FlexCenter">
+        
+        <div id="drop-target" class="FlexCenter">
+            <h1><i class="fa-solid fa-folder-open"></i></h1>
+        </div>
+
+    </section>
+    <div class="Directories_btn FlexCenter2">
+        <button id="directory-open" data-path="/private/clone"><i class="fa-solid fa-folder"></i></button>
+        <button id="archive-zip"><i class="fa-solid fa-file-zipper"></i></button>
+        <!-- <button id="archive-zip" disabled><i class="fa-solid fa-file-zipper"></i></button> -->
+    </div>
+    <div class="Funcs_btn FlexCenter2">
+        <button id="compare-listes"><i class="fa-solid fa-clone"></i></button>
+        <button id="pin-file"><i class="fa-solid fa-thumbtack"></i></button>
+        <button id="delete-file"><i class="fa-regular fa-trash-can"></i></button>
+        <!-- <button id="compare-listes" disabled><i class="fa-solid fa-clone"></i></button>
+        <button id="pin-file" disabled><i class="fa-solid fa-thumbtack"></i></button>
+        <button id="delete-file" disabled><i class="fa-regular fa-trash-can"></i></button> -->
+    </div>
+</body>
+<script src="../renderer.js"></script>
+</html>

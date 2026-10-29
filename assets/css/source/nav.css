@@ -1,0 +1,73 @@
+nav {
+    position: absolute;
+    top: 0; left: 0;
+    width: 28%; height: 100%;
+    border: none;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-image: linear-gradient(transparent, var(--color-hr-insta)) 1;
+}
+
+.brand {
+    position: absolute;
+    top: 0; left: 0;
+    margin: 20px;
+    user-select: none;
+    pointer-events: none;
+} .brand img {
+    width: 70px; height: 70px;
+    border-radius: 20px;
+}
+.brand h1 {
+    font-weight: 100;
+    font-size: 20px;
+    margin-left: 10px;
+}
+.brand h1 strong {
+    font-style: normal;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+#divContentJSON {
+    width: 100%;
+    height: 55%;
+    align-items: start;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    border: none;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-image: linear-gradient(-90deg, transparent, var(--color-hr-insta)) 1;
+}
+
+nav button {
+    border-radius: 7px;
+    background: transparent;
+    color: var(--color-white-insta);
+    border: none;
+    text-decoration: none;
+    padding: 15px 20px;
+    font-size: 15px;
+    text-align: start;
+    transition: 0.2s ease-in-out;
+    width: 80%;
+    margin: 2%;
+    user-select: none;
+} nav button i { margin-right: 13px; }
+nav button:hover {
+    cursor: pointer;
+    background: var(--color-hover-background-dark-insta);
+}
+
+nav button.trashData {
+    position: absolute;
+    background: var(--color-blue-insta);
+    width: 96%;
+    margin: 0 2%;
+    bottom: 2%;
+} nav button.trashData strong { font-weight: 100; margin-left: calc(13px / 2); }
+nav button.trashData:hover { background: var(--color-blue-insta); opacity: 92%; }

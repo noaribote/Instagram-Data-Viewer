@@ -1,0 +1,15 @@
+section {
+    position: absolute;
+    top: 0; right: 0;
+    width: 72%; height: 100%;
+}
+
+#primary-sec #drop-target {
+    width: 200px; height: 200px;
+    border: 2px dashed var(--color-hr-insta);
+    padding: 100px;
+    border-radius: 14px;
+} #drop-target h1 {
+    font-size: 100px;
+    color: var(--color-hr-insta);
+}

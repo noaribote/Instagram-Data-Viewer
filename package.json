@@ -1,0 +1,37 @@
+{
+  "name": "Instagram Data Viewer",
+  "version": "1.0.0",
+  "description": "Visualiseur de données Instagram",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "Instagram-data-viewer",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "uninstallDisplayName": "Instagram Data Viewer",
+      "license": "license.md",
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "keywords": [],
+  "author": "RIBOTE--MORAL Noa",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^42.5.1",
+    "electron-builder": "^26.15.3",
+    "electron-packager": "^14.2.1"
+  }
+}
