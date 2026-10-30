@@ -37,7 +37,7 @@
 
     </section>
     <div class="Directories_btn FlexCenter2">
-        <button id="directory-open" data-path="/private/clone"><i class="fa-solid fa-folder"></i></button>
+        <button id="directory-open" data-path="model"><i class="fa-solid fa-folder"></i></button>
         <button id="archive-zip"><i class="fa-solid fa-file-zipper"></i></button>
         <!-- <button id="archive-zip" disabled><i class="fa-solid fa-file-zipper"></i></button> -->
     </div>
@@ -48,6 +48,15 @@
         <!-- <button id="compare-listes" disabled><i class="fa-solid fa-clone"></i></button>
         <button id="pin-file" disabled><i class="fa-solid fa-thumbtack"></i></button>
         <button id="delete-file" disabled><i class="fa-regular fa-trash-can"></i></button> -->
+    </div>
+    <div id="copy-modal" class="copy-modal-backdrop" hidden>
+        <section class="copy-modal" role="dialog" aria-modal="true" aria-labelledby="copy-modal-title">
+            <h2 id="copy-modal-title">Copie des données</h2>
+            <p id="copy-estimate">Préparation de l’estimation…</p>
+            <progress id="copy-progress" max="100" value="0"></progress>
+            <p id="copy-status">Analyse des fichiers…</p>
+            <button id="cancel-copy" type="button">Annuler</button>
+        </section>
     </div>
 </body>
 <script src="../renderer.js"></script>
