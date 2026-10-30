@@ -29,6 +29,13 @@ nav {
     font-weight: 800;
 }
 
+.main-p-nav {
+    opacity: 80%;
+    font-size: 12px;
+    margin: 0 0 20px 20px;
+    width: calc(100% - 20px);
+}
+
 #divContentJSON {
     width: 100%;
     height: 55%;

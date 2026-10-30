@@ -14,6 +14,12 @@ section {
     color: var(--color-hr-insta);
 }
 
+#primary-sec .main-p-nav {
+    position: absolute;
+    left: 10px; bottom: 10px;
+    width: auto;
+}
+
 .copy-modal-backdrop {
     position: fixed;
     inset: 0;

@@ -4,9 +4,11 @@ class ModelView {
         this.selectFolderButton = document.getElementById('select-model-folder');
         this.sizeDisplay = document.getElementById('qteGO');
         this.freeSpaceButton = document.getElementById('libEspace');
+        this.jsonFileCount = document.getElementById('json-file-count');
     }
 
     renderJsonFiles(files, onSelect) {
+        this.jsonFileCount.textContent = `${files.length} fichier${files.length > 1 ? 's' : ''} de données`;
         this.jsonContainer.querySelectorAll('button[data-json-path]').forEach((button) => button.remove());
         this.selectFolderButton.hidden = files.length > 0;
         for (const file of files) {
