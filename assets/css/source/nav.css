@@ -71,3 +71,12 @@ nav button.trashData {
     bottom: 2%;
 } nav button.trashData strong { font-weight: 100; margin-left: calc(13px / 2); }
 nav button.trashData:hover { background: var(--color-blue-insta); opacity: 92%; }
+nav button.trashData:disabled {
+    background: var(--color-hover-background-dark-insta);
+    opacity: 55%;
+    cursor: not-allowed;
+}
+nav button.trashData:disabled:hover {
+    background: var(--color-hover-background-dark-insta);
+    opacity: 55%;
+}

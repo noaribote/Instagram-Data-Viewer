@@ -6,6 +6,13 @@ const copyProgress = document.getElementById('copy-progress');
 const copyStatus = document.getElementById('copy-status');
 const cancelCopyButton = document.getElementById('cancel-copy');
 const modelSizeDisplay = document.getElementById('qteGO');
+const freeSpaceButton = document.getElementById('libEspace');
+const cleanupPrompt = document.getElementById('cleanup-prompt');
+const cleanupMessage = document.getElementById('cleanup-message');
+const cleanupProgress = document.getElementById('cleanup-progress');
+const cleanupStatus = document.getElementById('cleanup-status');
+const cleanupYesButton = document.getElementById('cleanup-yes');
+const cleanupNoButton = document.getElementById('cleanup-no');
 const jsonContainer = document.getElementById('divContentJSON');
 const selectModelFolderButton = document.getElementById('select-model-folder');
 const replacePrompt = document.getElementById('replace-prompt');
@@ -17,6 +24,9 @@ let closeModalAfterCancel = false;
 let copyFinished = false;
 let cancellationRequested = false;
 let currentReplaceRequestId = null;
+let modelSizeRefreshInProgress = false;
+let jsonRefreshInProgress = false;
+let cleanupInProgress = false;
 
 if (window.electronAPI?.getDirectorySize) {
     refreshModelSize();
@@ -44,6 +54,19 @@ dropTarget.addEventListener('drop', async (event) => {
 
     startCopy(files, true);
 });
+
+dropTarget.addEventListener('click', () => {
+    selectAndCopyModelFolders();
+});
+
+async function selectAndCopyModelFolders() {
+    try {
+        const result = await window.electronAPI.selectModelFolder();
+        if (result.paths?.length) await startCopy(result.paths);
+    } catch (error) {
+        console.error('Impossible de sélectionner les dossiers :', error);
+    }
+}
 
 async function startCopy(paths, areFiles = false) {
     if (!paths.length) return;
@@ -106,9 +129,11 @@ window.electronAPI.onCopyProgress((progress) => {
         copyEstimate.textContent = `${formatBytes(progress.totalBytes)} copiés.`;
         copyStatus.textContent = `Copie terminée : ${progress.totalFiles} fichier(s).`;
         copyFinished = true;
-        cancelCopyButton.textContent = 'Fermer';
         refreshModelSize();
         refreshJSONButtons();
+        window.setTimeout(() => {
+            if (copyFinished && !cancellationRequested) copyModal.hidden = true;
+        }, 700);
     } else if (progress.phase === 'cancelled') {
         copyStatus.textContent = 'Copie annulée et fichiers copiés supprimés.';
         copyFinished = true;
@@ -122,14 +147,89 @@ window.electronAPI.onCopyProgress((progress) => {
     }
 });
 
+window.electronAPI.onCleanupProgress((progress) => {
+    if (progress.phase === 'starting') {
+        cleanupProgress.max = Math.max(progress.totalFiles, 1);
+        cleanupProgress.value = 0;
+        cleanupProgress.hidden = false;
+        cleanupStatus.hidden = false;
+        cleanupStatus.textContent = `Suppression de 0 sur ${progress.totalFiles} fichier(s)…`;
+    } else if (progress.phase === 'deleting') {
+        cleanupProgress.max = Math.max(progress.totalFiles, 1);
+        cleanupProgress.value = progress.deletedFiles;
+        cleanupStatus.textContent = `Suppression de ${progress.deletedFiles} sur ${progress.totalFiles} fichier(s)…`;
+    } else if (progress.phase === 'complete') {
+        cleanupProgress.value = cleanupProgress.max;
+        cleanupStatus.textContent = `${progress.totalFiles} fichier(s) supprimé(s).`;
+    }
+});
+
 async function refreshModelSize() {
+    if (modelSizeRefreshInProgress) return;
+    modelSizeRefreshInProgress = true;
     try {
         const bytes = await window.electronAPI.getDirectorySize('model');
         modelSizeDisplay.textContent = formatGigabytes(bytes);
+        const files = await window.electronAPI.listModelNonJson();
+        freeSpaceButton.disabled = !(bytes > 0 && files.length > 0);
     } catch (error) {
         console.error('Impossible de calculer la taille de model :', error);
+    } finally {
+        modelSizeRefreshInProgress = false;
     }
 }
+
+freeSpaceButton.addEventListener('click', async () => {
+    if (freeSpaceButton.disabled) return;
+    try {
+        const files = await window.electronAPI.listModelNonJson();
+        if (!files.length) {
+            freeSpaceButton.disabled = true;
+            return;
+        }
+        const totalBytes = files.reduce((total, file) => total + file.size, 0);
+        cleanupMessage.textContent = `Supprimer ${files.length} média(s) et libérer ${formatBytes(totalBytes)} ?`;
+        cleanupPrompt.hidden = false;
+    } catch (error) {
+        console.error('Impossible de vérifier les fichiers à supprimer :', error);
+    }
+});
+
+cleanupNoButton.addEventListener('click', () => {
+    cleanupPrompt.hidden = true;
+    cleanupYesButton.hidden = false;
+    cleanupYesButton.disabled = false;
+    cleanupNoButton.textContent = 'Annuler';
+});
+cleanupYesButton.addEventListener('click', async () => {
+    if (cleanupInProgress) return;
+    cleanupInProgress = true;
+    cleanupYesButton.disabled = true;
+    cleanupNoButton.disabled = true;
+    cleanupMessage.textContent = 'Préparation de la suppression…';
+    cleanupProgress.hidden = false;
+    cleanupProgress.max = 1;
+    cleanupProgress.value = 0;
+    cleanupStatus.hidden = false;
+    cleanupStatus.textContent = 'Préparation…';
+    try {
+        const result = await window.electronAPI.deleteModelNonJson();
+        await refreshModelSize();
+        await refreshJSONButtons();
+        cleanupStatus.textContent = `${result.deletedCount} fichier(s) supprimé(s), ${formatBytes(result.freedBytes)} libérés.`;
+        window.setTimeout(() => { cleanupPrompt.hidden = true; }, 700);
+    } catch (error) {
+        cleanupMessage.textContent = `Erreur : ${error.message}`;
+        cleanupStatus.hidden = true;
+        cleanupProgress.hidden = true;
+        cleanupYesButton.hidden = true;
+        cleanupNoButton.textContent = 'Fermer';
+    } finally {
+        cleanupYesButton.disabled = false;
+        cleanupNoButton.disabled = false;
+        cleanupInProgress = false;
+    }
+});
 
 function formatGigabytes(bytes) {
     const gigabytes = bytes / (1024 ** 3);
@@ -159,15 +259,12 @@ replaceYesButton.addEventListener('click', () => answerReplacePrompt(true));
 replaceNoButton.addEventListener('click', () => answerReplacePrompt(false));
 
 selectModelFolderButton.addEventListener('click', async () => {
-    try {
-        const result = await window.electronAPI.selectModelFolder();
-        if (result.path) await startCopy([result.path]);
-    } catch (error) {
-        console.error('Impossible de sélectionner le dossier :', error);
-    }
+    await selectAndCopyModelFolders();
 });
 
 async function refreshJSONButtons() {
+    if (jsonRefreshInProgress) return;
+    jsonRefreshInProgress = true;
     try {
         const files = await window.electronAPI.listModelJson();
         jsonContainer.querySelectorAll('button[data-json-path]').forEach((button) => button.remove());
@@ -192,6 +289,8 @@ async function refreshJSONButtons() {
         }
     } catch (error) {
         console.error('Impossible de lister les fichiers JSON de model :', error);
+    } finally {
+        jsonRefreshInProgress = false;
     }
 }
 

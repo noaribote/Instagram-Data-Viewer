@@ -41,7 +41,9 @@ ipcMain.handle('list-model-json', async () => {
     await fs.promises.mkdir(modelPath, { recursive: true });
     const jsonFiles = [];
     async function walk(directory) {
-        const entries = await fs.promises.readdir(directory, { withFileTypes: true });
+        let entries;
+        try { entries = await fs.promises.readdir(directory, { withFileTypes: true }); }
+        catch (error) { if (error.code === 'ENOENT') return; throw error; }
         for (const entry of entries) {
             const fullPath = path.join(directory, entry.name);
             if (entry.isDirectory()) await walk(fullPath);
@@ -55,10 +57,56 @@ ipcMain.handle('list-model-json', async () => {
     return jsonFiles;
 });
 
+async function listModelNonJsonFiles() {
+    const modelPath = path.resolve(__dirname, 'model');
+    await fs.promises.mkdir(modelPath, { recursive: true });
+    const files = [];
+    async function walk(directory) {
+        let entries;
+        try { entries = await fs.promises.readdir(directory, { withFileTypes: true }); }
+        catch (error) { if (error.code === 'ENOENT') return; throw error; }
+        for (const entry of entries) {
+            const fullPath = path.join(directory, entry.name);
+            if (entry.isDirectory()) await walk(fullPath);
+            else if (entry.isFile() && path.extname(entry.name).toLowerCase() !== '.json') {
+                try {
+                    files.push({ path: path.relative(modelPath, fullPath), size: (await fs.promises.stat(fullPath)).size });
+                } catch (error) { if (error.code !== 'ENOENT') throw error; }
+            }
+        }
+    }
+    await walk(modelPath);
+    return files;
+}
+
+ipcMain.handle('list-model-non-json', listModelNonJsonFiles);
+ipcMain.handle('delete-model-non-json', async (event) => {
+    const modelPath = path.resolve(__dirname, 'model');
+    const files = await listModelNonJsonFiles();
+    let deletedCount = 0;
+    let freedBytes = 0;
+    event.sender.send('cleanup-progress', { phase: 'starting', totalFiles: files.length, deletedFiles: 0 });
+    for (const [index, file] of files.entries()) {
+        const fullPath = path.resolve(modelPath, file.path);
+        if (!fullPath.startsWith(`${modelPath}${path.sep}`)) throw new Error('Chemin de fichier invalide.');
+        try {
+            await fs.promises.unlink(fullPath);
+            deletedCount++;
+            freedBytes += file.size;
+        } catch (error) { if (error.code !== 'ENOENT') throw error; }
+        event.sender.send('cleanup-progress', {
+            phase: 'deleting', totalFiles: files.length, deletedFiles: index + 1,
+            freedBytes
+        });
+    }
+    event.sender.send('cleanup-progress', { phase: 'complete', totalFiles: files.length, deletedFiles: files.length, freedBytes });
+    return { deletedCount, freedBytes };
+});
+
 ipcMain.handle('select-model-folder', async () => {
-    const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] });
+    const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory', 'multiSelections'] });
     if (result.canceled || !result.filePaths.length) return { canceled: true };
-    return { path: result.filePaths[0] };
+    return { paths: result.filePaths };
 });
 
 ipcMain.handle('read-model-json', async (_event, relativePath) => {

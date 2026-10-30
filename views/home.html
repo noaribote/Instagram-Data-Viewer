@@ -22,8 +22,8 @@
             <button id="select-model-folder" type="button"><i class="fa-solid fa-folder-plus"></i>Ajouter vos données</button>
         </div>
 
-        <button class="trashData">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
+        <button class="trashData" id="libEspace" type="button" disabled>
+            <i class="fa-solid fa-photo-film"></i>
             Libérer de l'espace
             <strong>(<span id="qteGO">0,00</span>)</strong>
         </button>
@@ -43,6 +43,18 @@
         <button id="compare-listes" disabled><i class="fa-solid fa-clone"></i></button>
         <button id="pin-file" disabled><i class="fa-solid fa-thumbtack"></i></button>
         <button id="delete-file" disabled><i class="fa-regular fa-trash-can"></i></button>
+    </div>
+    <div id="cleanup-prompt" class="copy-modal-backdrop" hidden>
+        <section class="copy-modal" role="dialog" aria-modal="true" aria-labelledby="cleanup-title">
+            <h2 id="cleanup-title">Libérer de l’espace</h2>
+            <p id="cleanup-message"></p>
+            <progress id="cleanup-progress" max="100" value="0" hidden></progress>
+            <p id="cleanup-status" hidden></p>
+            <div class="copy-modal-actions">
+                <button id="cleanup-yes" type="button">Supprimer</button>
+                <button id="cleanup-no" type="button">Annuler</button>
+            </div>
+        </section>
     </div>
     <div id="copy-modal" class="copy-modal-backdrop" hidden>
         <section class="copy-modal" role="dialog" aria-modal="true" aria-labelledby="copy-modal-title">

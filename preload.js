@@ -3,6 +3,13 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
     getDirectorySize: (directoryPath) => ipcRenderer.invoke('get-directory-size', directoryPath),
     listModelJson: () => ipcRenderer.invoke('list-model-json'),
+    listModelNonJson: () => ipcRenderer.invoke('list-model-non-json'),
+    deleteModelNonJson: () => ipcRenderer.invoke('delete-model-non-json'),
+    onCleanupProgress: (callback) => {
+        const listener = (_event, progress) => callback(progress);
+        ipcRenderer.on('cleanup-progress', listener);
+        return () => ipcRenderer.removeListener('cleanup-progress', listener);
+    },
     selectModelFolder: () => ipcRenderer.invoke('select-model-folder'),
     startCopyPaths: (paths) => ipcRenderer.invoke('start-copy', paths),
     readModelJson: (relativePath) => ipcRenderer.invoke('read-model-json', relativePath),
