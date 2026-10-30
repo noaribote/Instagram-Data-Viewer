@@ -1,5 +1,6 @@
 ﻿const { app, BrowserWindow, Menu, globalShortcut, ipcMain, shell, nativeTheme } = require('electron');
 const fs = require('fs');
+const { dialog } = require('electron');
 const path = require('path');
 let mainWindow;
 let activeCopy = null;
@@ -27,13 +28,57 @@ ipcMain.on('open-external-link', (event, url) => {
   shell.openExternal(url);
 });
 
+ipcMain.handle('open-model-directory', async () => {
+    const modelPath = path.resolve(__dirname, 'model');
+    await fs.promises.mkdir(modelPath, { recursive: true });
+    const error = await shell.openPath(modelPath);
+    if (error) throw new Error(error);
+    return { success: true };
+});
+
+ipcMain.handle('list-model-json', async () => {
+    const modelPath = path.resolve(__dirname, 'model');
+    await fs.promises.mkdir(modelPath, { recursive: true });
+    const jsonFiles = [];
+    async function walk(directory) {
+        const entries = await fs.promises.readdir(directory, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(directory, entry.name);
+            if (entry.isDirectory()) await walk(fullPath);
+            else if (entry.isFile() && entry.name.toLowerCase().endsWith('.json')) {
+                const relativePath = path.relative(modelPath, fullPath);
+                jsonFiles.push({ path: relativePath, label: path.basename(entry.name, path.extname(entry.name)) });
+            }
+        }
+    }
+    await walk(modelPath);
+    return jsonFiles;
+});
+
+ipcMain.handle('select-model-folder', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] });
+    if (result.canceled || !result.filePaths.length) return { canceled: true };
+    return { path: result.filePaths[0] };
+});
+
+ipcMain.handle('read-model-json', async (_event, relativePath) => {
+    if (typeof relativePath !== 'string' || !relativePath.toLowerCase().endsWith('.json')) {
+        throw new Error('Nom de fichier JSON invalide.');
+    }
+    const modelPath = path.resolve(__dirname, 'model');
+    const jsonPath = path.resolve(modelPath, relativePath);
+    if (!jsonPath.startsWith(`${modelPath}${path.sep}`)) throw new Error('Chemin JSON invalide.');
+    const content = await fs.promises.readFile(jsonPath, 'utf8');
+    return JSON.parse(content);
+});
+
 
 
 ipcMain.handle('start-copy', async (event, sourcePaths) => {
     if (activeCopy) return { success: false, error: 'A copy is already running.' };
     if (!Array.isArray(sourcePaths) || !sourcePaths.length) return { success: false, error: 'No valid files to copy.' };
 
-    const job = { cancelled: false, destination: path.resolve(__dirname, 'model'), copiedPaths: [], createdDirectories: new Set() };
+    const job = { cancelled: false, destination: path.resolve(__dirname, 'model'), copiedPaths: [], createdDirectories: new Set(), copiedBytesDelta: 0, replace: false };
     activeCopy = job;
     try {
         event.sender.send('copy-progress', { phase: 'scanning' });
@@ -41,18 +86,36 @@ ipcMain.handle('start-copy', async (event, sourcePaths) => {
         for (const sourcePath of sourcePaths) await collectFiles(sourcePath, files);
         if (job.cancelled) { event.sender.send('copy-progress', { phase: 'cancelled' }); return { success: false, cancelled: true }; }
         const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
+        const existingPaths = [];
+        for (const file of files) {
+            const targetPath = getTargetPath(job.destination, file);
+            try { await fs.promises.access(targetPath); existingPaths.push(targetPath); }
+            catch (error) { if (error.code !== 'ENOENT') throw error; }
+        }
+        if (existingPaths.length) {
+            const replace = await waitForReplaceChoice(event.sender, existingPaths.length, job);
+            if (job.cancelled || !replace) {
+                event.sender.send('copy-progress', { phase: 'cancelled' });
+                return { success: false, cancelled: true };
+            }
+            job.replace = true;
+        }
         await fs.promises.mkdir(job.destination, { recursive: true });
-        event.sender.send('copy-progress', { phase: 'copying', totalBytes, copiedBytes: 0, totalFiles: files.length, copiedFiles: 0 });
+        const existingSize = await getDirectorySize(job.destination).catch(() => 0);
+        event.sender.send('copy-progress', { phase: 'copying', totalBytes, existingSize, copiedBytes: 0, totalFiles: files.length, copiedFiles: 0 });
         let copiedBytes = 0;
         for (let index = 0; index < files.length; index++) {
             if (job.cancelled) break;
             const file = files[index];
-            const targetPath = path.join(job.destination, path.basename(file.root), path.relative(file.root, file.path));
+            const targetPath = getTargetPath(job.destination, file);
             await ensureDirectory(path.dirname(targetPath), job.createdDirectories);
-            await fs.promises.copyFile(file.path, targetPath, fs.constants.COPYFILE_EXCL);
+            const previousStat = job.replace ? await fs.promises.stat(targetPath).catch(() => null) : null;
+            await fs.promises.copyFile(file.path, targetPath, job.replace ? 0 : fs.constants.COPYFILE_EXCL);
             job.copiedPaths.push(targetPath);
+            job.copiedBytesDelta += file.size - (previousStat?.size || 0);
+            job.copiedBytesDelta ??= 0;
             copiedBytes += file.size;
-            event.sender.send('copy-progress', { phase: 'copying', totalBytes, copiedBytes, totalFiles: files.length, copiedFiles: index + 1 });
+            event.sender.send('copy-progress', { phase: 'copying', totalBytes, existingSize, copiedBytes, copiedBytesDelta: job.copiedBytesDelta, totalFiles: files.length, copiedFiles: index + 1 });
         }
         if (job.cancelled) {
             for (const copiedPath of job.copiedPaths) await fs.promises.rm(copiedPath, { force: true });
@@ -72,7 +135,36 @@ ipcMain.handle('start-copy', async (event, sourcePaths) => {
     }
 });
 
-ipcMain.on('cancel-copy', () => { if (activeCopy) activeCopy.cancelled = true; });
+ipcMain.on('cancel-copy', () => {
+    if (!activeCopy) return;
+    activeCopy.cancelled = true;
+    activeCopy.resolveReplace?.(false);
+});
+
+const replaceWaiters = new Map();
+function waitForReplaceChoice(sender, count, job) {
+    const requestId = `${Date.now()}-${Math.random()}`;
+    return new Promise((resolve) => {
+        const finish = (replace) => {
+            replaceWaiters.delete(requestId);
+            job.resolveReplace = null;
+            resolve(replace);
+        };
+        replaceWaiters.set(requestId, finish);
+        job.resolveReplace = finish;
+        sender.send('copy-progress', { phase: 'conflict', requestId, count });
+    });
+}
+
+ipcMain.on('replace-choice', (_event, requestId, replace) => {
+    const resolve = replaceWaiters.get(requestId);
+    if (!resolve) return;
+    resolve(Boolean(replace));
+});
+
+function getTargetPath(destination, file) {
+    return path.join(destination, path.basename(file.root), path.relative(file.root, file.path));
+}
 
 async function ensureDirectory(directory, createdDirectories) {
     const missing = [];

@@ -1,7 +1,7 @@
 nav {
     position: absolute;
     top: 0; left: 0;
-    width: 28%; height: 100%;
+    width: 350px; height: 100%;
     border: none;
     border-right-style: solid;
     border-right-width: 1px;

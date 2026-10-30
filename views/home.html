@@ -19,14 +19,13 @@
         </div>
 
         <div id="divContentJSON">
-            <button><i class="fa-solid fa-database"></i>suivis</button>
-            <button><i class="fa-solid fa-database"></i>followers</button>
+            <button id="select-model-folder" type="button"><i class="fa-solid fa-folder-plus"></i>Ajouter un dossier</button>
         </div>
 
         <button class="trashData">
             <i class="fa-solid fa-cloud-arrow-up"></i>
             Libérer de l'espace
-            <strong>(<span id="qteGO">0,00</span>&nbsp;Go)</strong>
+            <strong>(<span id="qteGO">0,00</span>)</strong>
         </button>
     </nav>
     <section id="primary-sec" class="FlexCenter">
@@ -37,17 +36,13 @@
 
     </section>
     <div class="Directories_btn FlexCenter2">
-        <button id="directory-open" data-path="model"><i class="fa-solid fa-folder"></i></button>
-        <button id="archive-zip"><i class="fa-solid fa-file-zipper"></i></button>
-        <!-- <button id="archive-zip" disabled><i class="fa-solid fa-file-zipper"></i></button> -->
+        <button id="directory-open"><i class="fa-solid fa-folder"></i></button>
+        <button id="archive-zip" disabled><i class="fa-solid fa-file-zipper"></i></button>
     </div>
     <div class="Funcs_btn FlexCenter2">
-        <button id="compare-listes"><i class="fa-solid fa-clone"></i></button>
-        <button id="pin-file"><i class="fa-solid fa-thumbtack"></i></button>
-        <button id="delete-file"><i class="fa-regular fa-trash-can"></i></button>
-        <!-- <button id="compare-listes" disabled><i class="fa-solid fa-clone"></i></button>
+        <button id="compare-listes" disabled><i class="fa-solid fa-clone"></i></button>
         <button id="pin-file" disabled><i class="fa-solid fa-thumbtack"></i></button>
-        <button id="delete-file" disabled><i class="fa-regular fa-trash-can"></i></button> -->
+        <button id="delete-file" disabled><i class="fa-regular fa-trash-can"></i></button>
     </div>
     <div id="copy-modal" class="copy-modal-backdrop" hidden>
         <section class="copy-modal" role="dialog" aria-modal="true" aria-labelledby="copy-modal-title">
@@ -55,6 +50,11 @@
             <p id="copy-estimate">Préparation de l’estimation…</p>
             <progress id="copy-progress" max="100" value="0"></progress>
             <p id="copy-status">Analyse des fichiers…</p>
+            <p id="replace-prompt" hidden>Les fichiers existent déjà.<br>Voulez-vous les remplacer ?</p>
+            <div id="replace-actions" class="copy-modal-actions" hidden>
+                <button id="replace-yes" type="button">Oui</button>
+                <button id="replace-no" type="button">Non</button>
+            </div>
             <button id="cancel-copy" type="button">Annuler</button>
         </section>
     </div>

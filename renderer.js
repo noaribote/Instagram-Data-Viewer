@@ -5,13 +5,24 @@ const copyEstimate = document.getElementById('copy-estimate');
 const copyProgress = document.getElementById('copy-progress');
 const copyStatus = document.getElementById('copy-status');
 const cancelCopyButton = document.getElementById('cancel-copy');
+const modelSizeDisplay = document.getElementById('qteGO');
+const jsonContainer = document.getElementById('divContentJSON');
+const selectModelFolderButton = document.getElementById('select-model-folder');
+const replacePrompt = document.getElementById('replace-prompt');
+const replaceActions = document.getElementById('replace-actions');
+const replaceYesButton = document.getElementById('replace-yes');
+const replaceNoButton = document.getElementById('replace-no');
 let copyStartedAt = 0;
 let closeModalAfterCancel = false;
 let copyFinished = false;
 let cancellationRequested = false;
+let currentReplaceRequestId = null;
 
 if (window.electronAPI?.getDirectorySize) {
-    window.electronAPI.getDirectorySize('model').catch(console.error);
+    refreshModelSize();
+    window.setInterval(refreshModelSize, 1000);
+    refreshJSONButtons();
+    window.setInterval(refreshJSONButtons, 1500);
 }
 
 dropTarget.addEventListener('dragover', (event) => {
@@ -31,36 +42,64 @@ dropTarget.addEventListener('drop', async (event) => {
     const files = [...event.dataTransfer.files];
     if (!files.length) return;
 
+    startCopy(files, true);
+});
+
+async function startCopy(paths, areFiles = false) {
+    if (!paths.length) return;
     copyStartedAt = Date.now();
     closeModalAfterCancel = false;
     copyFinished = false;
     cancellationRequested = false;
     copyModal.hidden = false;
+    replacePrompt.hidden = true;
+    replaceActions.hidden = true;
+    copyEstimate.hidden = false;
+    copyProgress.hidden = false;
+    copyStatus.hidden = false;
     copyProgress.value = 0;
     copyStatus.textContent = 'Analyse des fichiers…';
     copyEstimate.textContent = 'Estimation de la taille et de la durée…';
     cancelCopyButton.disabled = false;
     cancelCopyButton.textContent = 'Annuler';
     cancelCopyButton.hidden = false;
-    const result = await window.electronAPI.startCopy(files);
-    if (!result.success && !result.cancelled) {
-        copyStatus.textContent = `Erreur : ${result.error}`;
+    try {
+        const result = areFiles
+            ? await window.electronAPI.startCopy(paths)
+            : await window.electronAPI.startCopyPaths(paths);
+        if (!result.success && !result.cancelled) {
+            copyStatus.textContent = `Erreur : ${result.error}`;
+            copyFinished = true;
+            cancelCopyButton.textContent = 'Fermer';
+        }
+    } catch (error) {
+        copyStatus.textContent = `Erreur : ${error.message}`;
         copyFinished = true;
         cancelCopyButton.textContent = 'Fermer';
     }
-});
+}
 
 window.electronAPI.onCopyProgress((progress) => {
     if (progress.phase === 'scanning') {
         copyStatus.textContent = 'Analyse des fichiers en cours…';
         copyEstimate.textContent = 'Calcul du volume total…';
+    } else if (progress.phase === 'conflict') {
+        currentReplaceRequestId = progress.requestId;
+        copyEstimate.hidden = true;
+        copyProgress.hidden = true;
+        copyStatus.hidden = true;
+        replacePrompt.textContent = `Les fichiers existent déjà (${progress.count}) : voulez-vous les remplacer ?`;
+        replacePrompt.hidden = false;
+        replaceActions.hidden = false;
+        cancelCopyButton.hidden = true;
     } else if (progress.phase === 'copying') {
         const percent = progress.totalBytes ? Math.min(100, progress.copiedBytes / progress.totalBytes * 100) : 100;
         copyProgress.value = percent;
+        modelSizeDisplay.textContent = formatGigabytes((progress.existingSize || 0) + (progress.copiedBytesDelta || 0));
         const elapsed = (Date.now() - copyStartedAt) / 1000;
         const speed = progress.copiedBytes / Math.max(elapsed, 0.25);
         const remaining = speed > 0 ? (progress.totalBytes - progress.copiedBytes) / speed : 0;
-        copyEstimate.textContent = `${formatBytes(progress.totalBytes)} au total · durée estimée : ${formatDuration(progress.totalBytes / Math.max(speed, 1))}`;
+        copyEstimate.textContent = `${formatBytes(progress.totalBytes)} au total`;
         copyStatus.textContent = `${formatBytes(progress.copiedBytes)} copiés sur ${formatBytes(progress.totalBytes)} · ${formatDuration(remaining)} restantes`;
     } else if (progress.phase === 'complete') {
         copyProgress.value = 100;
@@ -68,9 +107,12 @@ window.electronAPI.onCopyProgress((progress) => {
         copyStatus.textContent = `Copie terminée : ${progress.totalFiles} fichier(s).`;
         copyFinished = true;
         cancelCopyButton.textContent = 'Fermer';
+        refreshModelSize();
+        refreshJSONButtons();
     } else if (progress.phase === 'cancelled') {
         copyStatus.textContent = 'Copie annulée et fichiers copiés supprimés.';
         copyFinished = true;
+        refreshModelSize();
         if (closeModalAfterCancel || cancellationRequested) copyModal.hidden = true;
         else cancelCopyButton.textContent = 'Fermer';
     } else if (progress.phase === 'error') {
@@ -79,6 +121,79 @@ window.electronAPI.onCopyProgress((progress) => {
         cancelCopyButton.textContent = 'Fermer';
     }
 });
+
+async function refreshModelSize() {
+    try {
+        const bytes = await window.electronAPI.getDirectorySize('model');
+        modelSizeDisplay.textContent = formatGigabytes(bytes);
+    } catch (error) {
+        console.error('Impossible de calculer la taille de model :', error);
+    }
+}
+
+function formatGigabytes(bytes) {
+    const gigabytes = bytes / (1024 ** 3);
+    if (gigabytes < 0.10) {
+        return `${(bytes / (1024 ** 2)).toFixed(2).replace('.', ',')} Mo`;
+    }
+    return `${gigabytes.toFixed(2).replace('.', ',')} Go`;
+}
+
+function answerReplacePrompt(replace) {
+    if (!currentReplaceRequestId) return;
+    window.electronAPI.chooseReplace(currentReplaceRequestId, replace);
+    currentReplaceRequestId = null;
+    replacePrompt.hidden = true;
+    replaceActions.hidden = true;
+    copyEstimate.hidden = false;
+    copyProgress.hidden = false;
+    copyStatus.hidden = false;
+    cancelCopyButton.hidden = false;
+    if (!replace) {
+        cancellationRequested = true;
+        copyStatus.textContent = 'Annulation de la copie…';
+    }
+}
+
+replaceYesButton.addEventListener('click', () => answerReplacePrompt(true));
+replaceNoButton.addEventListener('click', () => answerReplacePrompt(false));
+
+selectModelFolderButton.addEventListener('click', async () => {
+    try {
+        const result = await window.electronAPI.selectModelFolder();
+        if (result.path) await startCopy([result.path]);
+    } catch (error) {
+        console.error('Impossible de sélectionner le dossier :', error);
+    }
+});
+
+async function refreshJSONButtons() {
+    try {
+        const files = await window.electronAPI.listModelJson();
+        jsonContainer.querySelectorAll('button[data-json-path]').forEach((button) => button.remove());
+        selectModelFolderButton.hidden = files.length > 0;
+        for (const file of files) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.dataset.jsonPath = file.path;
+            button.title = file.path;
+            button.innerHTML = '<i class="fa-solid fa-database"></i>';
+            const visibleLabel = file.label.length > 18 ? `${file.label.slice(0, 15)}...` : file.label;
+            button.append(document.createTextNode(visibleLabel));
+            button.addEventListener('click', async () => {
+                try {
+                    const data = await window.electronAPI.readModelJson(file.path);
+                    window.dispatchEvent(new CustomEvent('model-json-selected', { detail: { path: file.path, data } }));
+                } catch (error) {
+                    console.error(`Impossible de lire ${file.path} :`, error);
+                }
+            });
+            jsonContainer.append(button);
+        }
+    } catch (error) {
+        console.error('Impossible de lister les fichiers JSON de model :', error);
+    }
+}
 
 cancelCopyButton.addEventListener('click', () => {
     if (copyFinished) {
@@ -94,7 +209,9 @@ cancelCopyButton.addEventListener('click', () => {
 
 directoryOpen.addEventListener('click', (event) => {
     event.preventDefault();
-    window.electronAPI.openDirectory(directoryOpen.dataset.path);
+    window.electronAPI.openDirectory().catch((error) => {
+        console.error('Impossible d’ouvrir le dossier model :', error);
+    });
 });
 
 function formatBytes(bytes) {
