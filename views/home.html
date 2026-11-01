@@ -11,15 +11,16 @@
 <body>
 
     <nav class="FlexCenter">
-        <div class="brand FlexCenter2">
+        <button class="brand FlexCenter2" id="home-button" type="button" title="Retour à l’accueil">
             <img src="../assets/images/logo.png">
             <h1>𝓘𝓷𝓼𝓽𝓪𝓰𝓻𝓪𝓶
                 <br><strong>Data Viewer</strong>
             </h1>
-        </div>
+        </button>
 
         <p id="json-file-count" class="main-p-nav">0 fichier de données</p>
         <div id="divContentJSON">
+            <button id="dashboard-button" type="button"><i class="fa-solid fa-house"></i>Accueil</button>
             <button id="select-model-folder" type="button"><i class="fa-solid fa-folder-plus"></i>Ajouter vos données</button>
         </div>
 
@@ -30,21 +31,35 @@
         </button>
     </nav>
     <section id="primary-sec" class="FlexCenter">
+        <section id="dashboard-view" aria-label="Accueil">
+            <header class="dashboard-header">
+                <p class="dashboard-eyebrow">INSTAGRAM DATA VIEWER</p>
+                <h1>Votre espace Instagram</h1>
+                <p>Explorez vos donn&#233;es personnelles, en local sur cet appareil.</p>
+            </header>
+            <div class="dashboard-stats" aria-live="polite">
+                <article><span>Nombre d&#39;amis</span><strong id="dashboard-friend-count">—</strong></article>
+                <article><span>Conversations</span><strong id="dashboard-conversation-count">—</strong></article>
+                <article><span>Messages envoy&#233;s</span><strong id="dashboard-sent-message-count">—</strong></article>
+            </div>
+            <section class="dashboard-search">
+                <label for="global-search">Rechercher dans tous les fichiers</label>
+                <input id="global-search" type="search" placeholder="Nom, message, commentaire, date&#8230;" autocomplete="off">
+                <p id="global-search-status" aria-live="polite">La recherche s&rsquo;effectue sur cet appareil.</p>
+                <div id="global-search-results"></div>
+            </section>
         <p class="main-p-nav">© 2026 RIBOTE--MORAL Noa</p>
         
         <div id="drop-target" class="FlexCenter">
             <h1><i class="fa-solid fa-folder-open"></i></h1>
+            <p>Glissez ici votre export Instagram, ou cliquez pour choisir des fichiers.</p>
         </div>
+        </section>
+        <iframe id="json-view" src="DataView.html" title="Contenu des données Instagram" hidden></iframe>
 
     </section>
     <div class="Directories_btn FlexCenter2">
         <button id="directory-open"><i class="fa-solid fa-folder"></i></button>
-        <button id="archive-zip" disabled><i class="fa-solid fa-file-zipper"></i></button>
-    </div>
-    <div class="Funcs_btn FlexCenter2">
-        <button id="compare-listes" disabled><i class="fa-solid fa-clone"></i></button>
-        <button id="pin-file" disabled><i class="fa-solid fa-thumbtack"></i></button>
-        <button id="delete-file" disabled><i class="fa-regular fa-trash-can"></i></button>
     </div>
     <div id="cleanup-prompt" class="copy-modal-backdrop" hidden>
         <section class="copy-modal" role="dialog" aria-modal="true" aria-labelledby="cleanup-title">
@@ -75,9 +90,11 @@
 </body>
 <script src="js/dom.js"></script>
 <script src="js/ModelView.js"></script>
+<script src="js/DashboardView.js"></script>
 <script src="js/ImportView.js"></script>
 <script src="js/CleanupView.js"></script>
 <script src="../controllers/ModelViewController.js"></script>
+<script src="../controllers/DashboardViewController.js"></script>
 <script src="../controllers/ImportViewController.js"></script>
 <script src="../controllers/CleanupViewController.js"></script>
 <script src="../renderer.js"></script>

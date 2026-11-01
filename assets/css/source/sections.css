@@ -1,22 +1,59 @@
 section {
     position: absolute;
-    top: 0; right: 0;
-    width: calc(100% - 350px); height: 100%;
+    top: 0;
+    right: 0;
+    width: calc(100% - 350px);
+    height: 100%;
 }
 
 #primary-sec #drop-target {
-    width: 200px; height: 200px;
-    border: 2px dashed var(--color-hr-insta);
+    width: 200px;
+    height: 200px;
     padding: 100px;
+    border: 2px dashed var(--color-hr-insta);
     border-radius: 14px;
-} #drop-target h1 {
-    font-size: 100px;
+}
+
+#drop-target h1 {
     color: var(--color-hr-insta);
+    font-size: 100px;
+}
+
+#primary-sec #json-view {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: var(--color-background-dark-insta);
+}
+
+#primary-sec #json-view[hidden],
+#primary-sec #drop-target[hidden] {
+    display: none;
+}
+
+#primary-sec #json-view {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: var(--color-background-dark-insta);
+}
+
+#primary-sec #json-view[hidden] {
+    display: none;
+}
+
+#primary-sec #drop-target[hidden] {
+    display: none;
 }
 
 #primary-sec .main-p-nav {
     position: absolute;
-    left: 10px; bottom: 10px;
+    left: 10px;
+    bottom: 10px;
     width: auto;
 }
 
@@ -29,7 +66,11 @@ section {
     justify-content: center;
     background: rgb(0 0 0 / 70%);
 }
-.copy-modal-backdrop[hidden] { display: none; }
+
+.copy-modal-backdrop[hidden] {
+    display: none;
+}
+
 .copy-modal {
     position: relative;
     inset: auto;
@@ -41,13 +82,54 @@ section {
     background: var(--color-background-dark-insta);
     box-shadow: 0 18px 60px rgb(0 0 0 / 45%);
 }
-.copy-modal h2 { margin-bottom: 16px; }
-.copy-modal p { margin: 12px 0; color: #c5c8cc; }
-.copy-modal progress { width: 100%; height: 18px; accent-color: var(--color-blue-insta); }
-#cleanup-progress { accent-color: var(--color-red-insta); }
-.copy-modal button { margin-top: 12px; padding: 10px 18px; border: 0; border-radius: 8px; color: white; background: var(--color-red-insta); cursor: pointer; }
-.copy-modal-actions { display: flex; gap: 10px; }
-.copy-modal-actions[hidden] { display: none; }
-.copy-modal-actions button { min-width: 90px; background: var(--color-blue-insta); }
-.copy-modal-actions button:hover { opacity: .88; }
-#cleanup-yes { background: var(--color-red-insta); }
+
+.copy-modal h2 {
+    margin-bottom: 16px;
+}
+
+.copy-modal p {
+    margin: 12px 0;
+    color: #c5c8cc;
+}
+
+.copy-modal progress {
+    width: 100%;
+    height: 18px;
+    accent-color: var(--color-blue-insta);
+}
+
+#cleanup-progress {
+    accent-color: var(--color-red-insta);
+}
+
+.copy-modal button {
+    margin-top: 12px;
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--color-red-insta);
+    color: white;
+    cursor: pointer;
+}
+
+.copy-modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.copy-modal-actions[hidden] {
+    display: none;
+}
+
+.copy-modal-actions button {
+    min-width: 90px;
+    background: var(--color-blue-insta);
+}
+
+.copy-modal-actions button:hover {
+    opacity: .88;
+}
+
+#cleanup-yes {
+    background: var(--color-red-insta);
+}

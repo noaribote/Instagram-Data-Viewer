@@ -1,10 +1,10 @@
 @import url('source/nav.css');
 @import url('source/sections.css');
+@import url('source/dashboard.css');
 * { padding: 0; margin: 0; }
 :root {
     --color-background-dark-insta: #0c1014;
     --color-hover-background-dark-insta: #25292e;
-    /* --color-gradient-insta:; */
     --color-white-insta: #f5f5f5;
     --color-blue-insta: #4a5df9;
     --color-red-insta: #ff3c36;

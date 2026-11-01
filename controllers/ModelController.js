@@ -15,6 +15,8 @@ class ModelController {
             return { success: true };
         });
         ipcMain.handle('list-model-json', () => this.repository.listJson());
+        ipcMain.handle('get-dashboard-stats', () => this.repository.getDashboardStats());
+        ipcMain.handle('search-model-json', (_event, query) => this.repository.searchJson(query));
         ipcMain.handle('list-model-non-json', () => this.repository.listNonJson());
         ipcMain.handle('delete-model-non-json', (event) => this.repository.deleteNonJson((progress) => event.sender.send('cleanup-progress', progress)));
         ipcMain.handle('select-model-folder', async () => {

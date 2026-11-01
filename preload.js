@@ -3,6 +3,8 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
     getDirectorySize: (directoryPath) => ipcRenderer.invoke('get-directory-size', directoryPath),
     listModelJson: () => ipcRenderer.invoke('list-model-json'),
+    getDashboardStats: () => ipcRenderer.invoke('get-dashboard-stats'),
+    searchModelJson: (query) => ipcRenderer.invoke('search-model-json', query),
     listModelNonJson: () => ipcRenderer.invoke('list-model-non-json'),
     deleteModelNonJson: () => ipcRenderer.invoke('delete-model-non-json'),
     onCleanupProgress: (callback) => {

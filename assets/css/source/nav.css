@@ -11,13 +11,18 @@ nav {
 .brand {
     position: absolute;
     top: 0; left: 0;
-    margin: 20px;
     user-select: none;
-    pointer-events: none;
+    pointer-events: auto;
+    width: auto;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
 } .brand img {
     width: 70px; height: 70px;
     border-radius: 20px;
 }
+nav button.brand:hover { background: transparent; }
 .brand h1 {
     font-weight: 100;
     font-size: 20px;
