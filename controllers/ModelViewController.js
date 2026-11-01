@@ -18,8 +18,9 @@ class ModelViewController {
         if (this.sizeRefreshInProgress) return;
         this.sizeRefreshInProgress = true;
         try {
-            const [bytes, files] = await Promise.all([this.api.getDirectorySize('model'), this.api.listModelNonJson()]);
-            this.view.updateStorage(bytes, bytes > 0 && files.length > 0);
+            const files = await this.api.listModelNonJson();
+            const bytes = files.reduce((total, file) => total + file.size, 0);
+            this.view.updateStorage(bytes, files.length > 0);
         } catch (error) { console.error('Impossible de calculer la taille de model :', error); }
         finally { this.sizeRefreshInProgress = false; }
     }
@@ -28,7 +29,11 @@ class ModelViewController {
         if (this.jsonRefreshInProgress) return;
         this.jsonRefreshInProgress = true;
         try {
-            this.view.renderJsonFiles(await this.api.listModelJson(), (file) => this.selectJson(file));
+            const [files, totalBytes] = await Promise.all([
+                this.api.listModelJson(),
+                this.api.getDirectorySize('model')
+            ]);
+            this.view.renderJsonFiles(files, totalBytes, (file) => this.selectJson(file));
         } catch (error) { console.error('Impossible de lister les fichiers JSON de model :', error); }
         finally { this.jsonRefreshInProgress = false; }
     }

@@ -7,8 +7,8 @@ class ModelView {
         this.jsonFileCount = document.getElementById('json-file-count');
     }
 
-    renderJsonFiles(files, onSelect) {
-        this.jsonFileCount.textContent = `${files.length} fichier${files.length > 1 ? 's' : ''} de données`;
+    renderJsonFiles(files, bytes, onSelect) {
+        this.jsonFileCount.textContent = `${files.length} fichier${files.length > 1 ? 's' : ''} de données (${window.AppDom.formatBytes(bytes)})`;
         this.jsonContainer.querySelectorAll('button[data-json-path]').forEach((button) => button.remove());
         this.selectFolderButton.hidden = files.length > 0;
         for (const file of files) {

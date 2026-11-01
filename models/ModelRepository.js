@@ -30,7 +30,7 @@ class ModelRepository {
 
     async listJson() {
         return (await this.listFiles((name) => path.extname(name).toLowerCase() === '.json'))
-            .map((file) => ({ path: file.path, label: path.basename(file.name, path.extname(file.name)) }));
+            .map((file) => ({ path: file.path, label: path.basename(file.name, path.extname(file.name)), size: file.size }));
     }
 
     listNonJson() { return this.listFiles((name) => path.extname(name).toLowerCase() !== '.json'); }
