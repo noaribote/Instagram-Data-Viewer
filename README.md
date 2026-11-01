@@ -1,3 +1,9 @@
+# Logiciel en cours de développement !
+
+Version instable, problèmes potentiels et imprévisibles sur certaines fonctionnalités.
+- Veuillez attendre la sortie d'une **version stable** avant de lancer ce logiciel. La première version stable devrait sortir aux alentours du **1 déc. 2026**
+> Tenez-vous informé des nouveautés sur l'Instagram du développeur ( @noaribote )
+
 # Vos données restent chez vous
 
 **Tout se passe sur votre ordinateur.** Vos données ne quittent jamais votre machine : elles ne sont ni envoyées sur internet, ni stockées sur un serveur, ni transmises à un tiers.
