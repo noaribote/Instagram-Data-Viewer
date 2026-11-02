@@ -1,2 +1,6 @@
 node_modules/
 model/
+test/
+test_2/
+dist/
+TODO.md

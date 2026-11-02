@@ -1,7 +1,7 @@
 {
-  "name": "Instagram Data Viewer",
+  "name": "Instagram-Data-Viewer",
   "version": "1.0.0",
-  "description": "Visualiseur de données Instagram",
+  "description": "Visualisateur, interpréteur et comparateur de données Meta (Instagram).",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

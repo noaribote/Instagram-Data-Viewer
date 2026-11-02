@@ -1,3 +1,3 @@
-const AppController = require('./controllers/AppController');
+const AppController = require("./controllers/AppController");
 
 new AppController().start();

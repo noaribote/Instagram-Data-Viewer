@@ -1,135 +1,192 @@
 section {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: calc(100% - 350px);
-    height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(100% - 350px);
+  height: 100%;
+}
+
+#primary-sec {
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 #primary-sec #drop-target {
-    width: 200px;
-    height: 200px;
-    padding: 100px;
-    border: 2px dashed var(--color-hr-insta);
-    border-radius: 14px;
+  width: 200px;
+  height: 200px;
+  padding: 100px;
+  border: 2px dashed var(--color-hr-insta);
+  border-radius: 14px;
 }
 
 #drop-target h1 {
-    color: var(--color-hr-insta);
-    font-size: 100px;
+  color: var(--color-hr-insta);
+  font-size: 100px;
 }
 
 #primary-sec #json-view {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: var(--color-background-dark-insta);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--color-background-dark-insta);
 }
 
 #primary-sec #json-view[hidden],
 #primary-sec #drop-target[hidden] {
-    display: none;
+  display: none;
 }
 
 #primary-sec #json-view {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: var(--color-background-dark-insta);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--color-background-dark-insta);
 }
 
 #primary-sec #json-view[hidden] {
-    display: none;
+  display: none;
+}
+
+.json-actions {
+  position: fixed;
+  z-index: 5;
+  top: auto;
+  left: auto;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  gap: 8px;
+}
+.json-actions button {
+  border: 1px solid #303943;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #f5f6f8;
+  background: #151a20;
+  cursor: pointer;
+}
+.sidebar-group {
+  width: 100%;
+  padding: 8px 10px;
+}
+.sidebar-group > span {
+  display: block;
+  padding: 6px 10px;
+  color: #9ba6b2;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+#json-file-list button,
+#pinned-json-list button {
+  display: block;
+  width: 100%;
+  padding: 9px;
+  margin: 2px 0;
+  text-align: left;
 }
 
 #primary-sec #drop-target[hidden] {
-    display: none;
+  display: none;
 }
 
 #primary-sec .main-p-nav {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
-    width: auto;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  width: auto;
 }
 
 .copy-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgb(0 0 0 / 70%);
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 350px;
+  background: linear-gradient(
+    to right,
+    transparent 0 350px,
+    rgb(0 0 0 / 70%) 350px
+  );
+  box-sizing: border-box;
 }
 
 .copy-modal-backdrop[hidden] {
-    display: none;
+  display: none;
 }
 
 .copy-modal {
-    position: relative;
-    inset: auto;
-    width: min(420px, calc(100vw - 40px));
-    height: auto;
-    padding: 28px;
-    border: 1px solid var(--color-hr-insta);
-    border-radius: 14px;
-    background: var(--color-background-dark-insta);
-    box-shadow: 0 18px 60px rgb(0 0 0 / 45%);
+  position: relative;
+  inset: auto;
+  width: min(520px, calc(100vw - 350px));
+  height: auto;
+  padding: 20px;
+  border: 1px solid var(--color-hr-insta);
+  border-radius: 12px;
+  background: var(--color-background-dark-insta);
+  box-shadow: 0 18px 60px rgb(0 0 0 / 45%);
 }
 
 .copy-modal h2 {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .copy-modal p {
-    margin: 12px 0;
-    color: #c5c8cc;
+  margin: 12px 0;
+  color: #c5c8cc;
 }
 
 .copy-modal progress {
-    width: 100%;
-    height: 18px;
-    accent-color: var(--color-blue-insta);
+  width: 100%;
+  height: 18px;
+  accent-color: var(--color-blue-insta);
 }
 
 #cleanup-progress {
-    accent-color: var(--color-red-insta);
+  accent-color: var(--color-red-insta);
 }
 
 .copy-modal button {
-    margin-top: 12px;
-    padding: 10px 18px;
-    border: 0;
-    border-radius: 8px;
-    background: var(--color-red-insta);
-    color: white;
-    cursor: pointer;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--color-red-insta);
+  color: white;
+  cursor: pointer;
 }
 
 .copy-modal-actions {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .copy-modal-actions[hidden] {
-    display: none;
+  display: none;
 }
 
 .copy-modal-actions button {
-    min-width: 90px;
-    background: var(--color-blue-insta);
+  min-width: 90px;
+  background: var(--color-blue-insta);
 }
 
 .copy-modal-actions button:hover {
-    opacity: .88;
+  opacity: 0.88;
 }
 
 #cleanup-yes {
-    background: var(--color-red-insta);
+  background: var(--color-red-insta);
+}
+
+.json-actions {
+  position: fixed;
+  top: auto;
+  left: auto;
+  right: 24px;
+  bottom: 24px;
 }

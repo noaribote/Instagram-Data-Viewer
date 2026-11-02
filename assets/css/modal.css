@@ -1,0 +1,82 @@
+.app-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  width: min(900px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  padding: 16px;
+  overflow: hidden;
+  border: 1px solid #394453;
+  border-radius: 12px;
+  background: #11161c;
+  color: #e3e6eb;
+  box-shadow: 0 18px 60px #000a;
+}
+
+.app-dialog::backdrop {
+  background: #000b;
+}
+.app-dialog > header,
+.app-dialog-header {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #303943;
+}
+.app-dialog h2,
+.app-dialog-header h2 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+}
+.app-dialog-header button,
+.app-dialog > header button {
+  flex: 0 0 auto;
+}
+.app-dialog button,
+.app-button {
+  padding: 7px 11px;
+  border: 1px solid #394453;
+  border-radius: 7px;
+  background: #1a2028;
+  color: #e3e6eb;
+  font: inherit;
+  cursor: pointer;
+}
+.app-dialog button:hover,
+.app-button:hover {
+  background: #252e39;
+}
+.app-dialog button:disabled,
+.app-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.app-dialog-body {
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+@media (max-width: 520px) {
+  .app-dialog {
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+    padding: 12px;
+  }
+
+  .app-dialog h2,
+  .app-dialog-header h2 {
+    font-size: 16px;
+  }
+}

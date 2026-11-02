@@ -1,101 +1,200 @@
-<!DOCTYPE html>
-<html lang="FR-fr">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+<!doctype html>
+<html lang="fr-FR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' 'unsafe-inline';"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Instagram Data Viewer</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/cmds.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css" integrity="sha512-x9WwyMYBnlXMNQ6kQ/Lyzu1NqIhLQKL5Oq6xByfXuRj7s9CskyCbLv/1IjqzJmXwFXWr0ov6jBV7Qbc0hh9nHg==" crossorigin="anonymous" referrerpolicy="no-referrer">
-</head>
-<body>
-
-    <nav class="FlexCenter">
-        <button class="brand FlexCenter2" id="home-button" type="button" title="Retour à l’accueil">
-            <img src="../assets/images/logo.png">
-            <h1>𝓘𝓷𝓼𝓽𝓪𝓰𝓻𝓪𝓶
-                <br><strong>Data Viewer</strong>
-            </h1>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/cmds.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css"
+      integrity="sha512-x9WwyMYBnlXMNQ6kQ/Lyzu1NqIhLQKL5Oq6xByfXuRj7s9CskyCbLv/1IjqzJmXwFXWr0ov6jBV7Qbc0hh9nHg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <nav class="FlexCenter" aria-label="Navigation principale">
+      <button
+        class="brand FlexCenter2"
+        id="home-button"
+        type="button"
+        title="Retour à l’accueil"
+      >
+        <img src="../assets/images/logo.png" alt="" />
+        <h1>Instagram<br /><strong>Data Viewer</strong></h1>
+      </button>
+      <div id="divContentJSON">
+        <button id="dashboard-button" type="button">
+          <i class="fa-solid fa-house"></i>Accueil
         </button>
-
-        <p id="json-file-count" class="main-p-nav">0 fichier de données</p>
-        <div id="divContentJSON">
-            <button id="dashboard-button" type="button"><i class="fa-solid fa-house"></i>Accueil</button>
-            <button id="select-model-folder" type="button"><i class="fa-solid fa-folder-plus"></i>Ajouter vos données</button>
+        <button id="select-model-folder" type="button">
+          <i class="fa-solid fa-folder-plus"></i>Ajouter des données
+        </button>
+      </div>
+      <div id="divContentFiles">
+        <button id="data-filter-toggle" type="button">
+          <i class="fa-solid fa-filter"></i>Filtrer les fichiers
+        </button>
+        <div class="sidebar-group" id="pinned-files-group" hidden>
+          <span>Épinglés</span>
+          <div id="pinned-json-list"></div>
         </div>
-
-        <button class="trashData" id="libEspace" type="button" disabled>
-            <i class="fa-solid fa-photo-film"></i>
-            Libérer de l'espace
-            <strong>(<span id="qteGO">0,00</span>)</strong>
-        </button>
-    </nav>
-    <section id="primary-sec" class="FlexCenter">
-        <section id="dashboard-view" aria-label="Accueil">
-            <header class="dashboard-header">
-                <p class="dashboard-eyebrow">INSTAGRAM DATA VIEWER</p>
-                <h1>Votre espace Instagram</h1>
-                <p>Explorez vos donn&#233;es personnelles, en local sur cet appareil.</p>
-            </header>
-            <div class="dashboard-stats" aria-live="polite">
-                <article><span>Nombre d&#39;amis</span><strong id="dashboard-friend-count">—</strong></article>
-                <article><span>Conversations</span><strong id="dashboard-conversation-count">—</strong></article>
-                <article><span>Messages envoy&#233;s</span><strong id="dashboard-sent-message-count">—</strong></article>
+        <dialog
+          id="data-filter-dialog"
+          class="app-dialog filter-dialog"
+          aria-labelledby="filter-title"
+        >
+          <header>
+            <h2 id="filter-title">Filtrer les fichiers</h2>
+            <button
+              id="filter-close"
+              type="button"
+              aria-label="Fermer le filtre"
+            >
+              ×
+            </button>
+          </header>
+          <div id="data-filter-menu"></div>
+          <footer class="filter-actions">
+            <div class="filter-bulk-actions">
+              <button id="filter-select-all" type="button">Tout activer</button
+              ><button id="filter-select-none" type="button">
+                Tout désactiver
+              </button>
             </div>
-            <section class="dashboard-search">
-                <label for="global-search">Rechercher dans tous les fichiers</label>
-                <input id="global-search" type="search" placeholder="Nom, message, commentaire, date&#8230;" autocomplete="off">
-                <p id="global-search-status" aria-live="polite">La recherche s&rsquo;effectue sur cet appareil.</p>
-                <div id="global-search-results"></div>
-            </section>
-        <p class="main-p-nav">© 2026 RIBOTE--MORAL Noa</p>
-        
-        <div id="drop-target" class="FlexCenter">
-            <h1><i class="fa-solid fa-folder-open"></i></h1>
-            <p>Glissez ici votre export Instagram, ou cliquez pour choisir des fichiers.</p>
+            <div class="filter-submit-actions">
+              <button id="filter-cancel" type="button">Annuler</button
+              ><button id="filter-apply" class="primary-button" type="button">
+                Appliquer
+              </button>
+            </div>
+          </footer>
+        </dialog>
+        <div class="sidebar-group">
+          <span>Fichiers de JSON</span>
+          <div id="json-file-list"></div>
         </div>
-        </section>
-        <iframe id="json-view" src="DataView.html" title="Contenu des données Instagram" hidden></iframe>
+      </div>
+      <p id="app-credit" class="main-p-nav">
+        © 2026 RIBOTE--MORAL Noa<br />www.noaribote.fr · www.alous.fr
+      </p>
+      <button class="trashData" id="libEspace" type="button" disabled>
+        <i class="fa-solid fa-photo-film"></i>Libérer l’espace
+        <strong>(<span id="qteGO">0,00</span>)</strong>
+      </button>
+    </nav>
 
+    <section id="primary-sec" class="FlexCenter">
+      <section id="dashboard-view" aria-label="Accueil">
+        <header class="dashboard-header">
+          <p class="dashboard-eyebrow">INSTAGRAM DATA VIEWER</p>
+          <h1>Votre espace Instagram</h1>
+          <p>Explorez vos données personnelles, en local sur cet appareil.</p>
+        </header>
+        <div class="home-actions">
+          <button type="button" data-page="stats">
+            <i class="fa-solid fa-chart-line"></i
+            ><strong>Statistiques du compte</strong
+            ><span>Amis, messages et conversations</span>
+          </button>
+          <button type="button" data-page="crawler">
+            <i class="fa-solid fa-magnifying-glass"></i
+            ><strong>Autres utilisateurs</strong
+            ><span>Rechercher des profils publics</span>
+          </button>
+          <button type="button" data-page="contacts">
+            <i class="fa-solid fa-address-book"></i
+            ><strong>Liste de contacts</strong
+            ><span>Numéros, e-mails et mentions</span>
+          </button>
+          <button type="button" data-page="messages">
+            <i class="fa-solid fa-comments"></i><strong>Messages</strong
+            ><span>Parcourir vos conversations</span>
+          </button>
+        </div>
+        <section class="dashboard-search" id="dashboard-search-panel">
+          <label for="global-search">Rechercher dans tous les fichiers</label>
+          <input
+            id="global-search"
+            type="search"
+            placeholder="Nom, message, commentaire, date…"
+            autocomplete="off"
+          />
+          <p id="global-search-status" aria-live="polite">
+            La recherche s’effectue sur cet appareil.
+          </p>
+          <div id="global-search-results"></div>
+        </section>
+        <div id="drop-target" aria-label="Importer des fichiers ou dossiers">
+          <h1><i class="fa-solid fa-cloud-arrow-up"></i></h1>
+          <p>Déposez ici les fichiers à importer</p>
+        </div>
+      </section>
+      <iframe id="page-view" title="Vue Instagram" hidden></iframe>
+      <iframe
+        id="json-view"
+        src="DataView.html"
+        title="Contenu des données JSON"
+        hidden
+      ></iframe>
     </section>
+
     <div class="Directories_btn FlexCenter2">
-        <button id="directory-open"><i class="fa-solid fa-folder"></i></button>
+      <button id="directory-open" type="button" title="Ouvrir le dossier model">
+        <i class="fa-solid fa-folder"></i>
+      </button>
     </div>
     <div id="cleanup-prompt" class="copy-modal-backdrop" hidden>
-        <section class="copy-modal" role="dialog" aria-modal="true" aria-labelledby="cleanup-title">
-            <h2 id="cleanup-title">Libérer de l’espace</h2>
-            <p id="cleanup-message"></p>
-            <progress id="cleanup-progress" max="100" value="0" hidden></progress>
-            <p id="cleanup-status" hidden></p>
-            <div class="copy-modal-actions">
-                <button id="cleanup-yes" type="button">Supprimer</button>
-                <button id="cleanup-no" type="button">Annuler</button>
-            </div>
-        </section>
+      <section
+        class="copy-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cleanup-title"
+      >
+        <h2 id="cleanup-title">Libérer l’espace</h2>
+        <p id="cleanup-message"></p>
+        <progress id="cleanup-progress" max="100" value="0" hidden></progress>
+        <p id="cleanup-status" hidden></p>
+        <div class="copy-modal-actions">
+          <button id="cleanup-yes" type="button">Supprimer</button
+          ><button id="cleanup-no" type="button">Annuler</button>
+        </div>
+      </section>
     </div>
     <div id="copy-modal" class="copy-modal-backdrop" hidden>
-        <section class="copy-modal" role="dialog" aria-modal="true" aria-labelledby="copy-modal-title">
-            <h2 id="copy-modal-title">Copie des données</h2>
-            <p id="copy-estimate">Préparation de l’estimation…</p>
-            <progress id="copy-progress" max="100" value="0"></progress>
-            <p id="copy-status">Analyse des fichiers…</p>
-            <p id="replace-prompt" hidden>Les fichiers existent déjà.<br>Voulez-vous les remplacer ?</p>
-            <div id="replace-actions" class="copy-modal-actions" hidden>
-                <button id="replace-yes" type="button">Oui</button>
-                <button id="replace-no" type="button">Non</button>
-            </div>
-            <button id="cancel-copy" type="button">Annuler</button>
-        </section>
+      <section
+        class="copy-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="copy-modal-title"
+      >
+        <h2 id="copy-modal-title">Copie des données</h2>
+        <p id="copy-estimate">Préparation de la copie…</p>
+        <progress id="copy-progress" max="100" value="0"></progress>
+        <p id="copy-status">Analyse des fichiers…</p>
+        <p id="replace-prompt" hidden></p>
+        <div id="replace-actions" class="copy-modal-actions" hidden>
+          <button id="replace-yes" type="button">Oui</button
+          ><button id="replace-no" type="button">Non</button>
+        </div>
+        <button id="cancel-copy" type="button">Annuler</button>
+      </section>
     </div>
-</body>
-<script src="js/dom.js"></script>
-<script src="js/ModelView.js"></script>
-<script src="js/DashboardView.js"></script>
-<script src="js/ImportView.js"></script>
-<script src="js/CleanupView.js"></script>
-<script src="../controllers/ModelViewController.js"></script>
-<script src="../controllers/DashboardViewController.js"></script>
-<script src="../controllers/ImportViewController.js"></script>
-<script src="../controllers/CleanupViewController.js"></script>
-<script src="../renderer.js"></script>
+    <script src="js/dom.js"></script>
+    <script src="js/ModelView.js"></script>
+    <script src="js/DashboardView.js"></script>
+    <script src="js/ImportView.js"></script>
+    <script src="js/CleanupView.js"></script>
+    <script src="../controllers/ModelViewController.js"></script>
+    <script src="../controllers/DashboardViewController.js"></script>
+    <script src="../controllers/ImportViewController.js"></script>
+    <script src="../controllers/CleanupViewController.js"></script>
+    <script src="../renderer.js"></script>
+  </body>
 </html>

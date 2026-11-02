@@ -1,30 +1,52 @@
-@import url('source/nav.css');
-@import url('source/sections.css');
-@import url('source/dashboard.css');
-* { padding: 0; margin: 0; }
+@import url("source/nav.css");
+@import url("source/sections.css");
+@import url("source/dashboard.css");
+@import url("modal.css");
+@import url("source/dialog-overrides.css");
+* {
+  padding: 0;
+  margin: 0;
+}
 :root {
-    --color-background-dark-insta: #0c1014;
-    --color-hover-background-dark-insta: #25292e;
-    --color-white-insta: #f5f5f5;
-    --color-blue-insta: #4a5df9;
-    --color-red-insta: #ff3c36;
-    --color-hr-insta: #212122;
+  --color-background-dark-insta: #0c1014;
+  --color-hover-background-dark-insta: #25292e;
+  --color-white-insta: #f5f5f5;
+  --color-blue-insta: #4a5df9;
+  --color-red-insta: #ff3c36;
+  --color-hr-insta: #212122;
 }
 body {
-    background: var(--color-background-dark-insta);
-    color: var(--color-white-insta);
-    font-family: Arial, Helvetica, sans-serif;
-    height: 100vh;
+  background: var(--color-background-dark-insta);
+  color: var(--color-white-insta);
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100vh;
 }
-.FlexCenter { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.FlexCenter2 { display: flex; align-items: center; justify-content: center; }
-::selection { background-color: var(--color-blue-insta);  }
+.FlexCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.FlexCenter2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+::selection {
+  background-color: var(--color-blue-insta);
+}
 ::-webkit-scrollbar {
-    display: block;
-    width: 5px;
-} ::-webkit-scrollbar-track { background-color: var(--background-D); }
+  display: block;
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background-color: var(--background-D);
+}
 ::-webkit-scrollbar-thumb {
-    opacity: 40%;
-    background-color: var(--color-hr-insta);
-    border-radius: 1px;
-} ::-webkit-scrollbar-thumb:hover { background-color: var(--color-hover-background-dark-insta); }
+  opacity: 40%;
+  background-color: var(--color-hr-insta);
+  border-radius: 1px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-hover-background-dark-insta);
+}

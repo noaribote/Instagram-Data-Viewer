@@ -1,29 +1,49 @@
-.Directories_btn, .Funcs_btn {
-    position: absolute;
-    top: 10px; right: 10px;
-} .Funcs_btn { top: auto !important; bottom: 10px; }
-
-.Directories_btn button, .Funcs_btn button {
-    background: none;
-    border: none;
-    font-size: 22px;
-    padding: 5px;
-    border-radius: 7px;
-    margin: 0 2px;
-    transition: 0.2s ease-in-out;
-} .Directories_btn button:hover, .Funcs_btn button:hover {
-    cursor: pointer;
-    background: var(--color-hover-background-dark-insta);
+.Directories_btn,
+.Funcs_btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.Funcs_btn {
+  top: auto !important;
+  bottom: 10px;
 }
 
-.Directories_btn button:disabled, .Funcs_btn button:disabled {
-    cursor: default;
-    opacity: 10%;
-    pointer-events: none;
+.Directories_btn button,
+.Funcs_btn button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  padding: 5px;
+  border-radius: 7px;
+  margin: 0 2px;
+  transition: 0.2s ease-in-out;
+}
+.Directories_btn button:hover,
+.Funcs_btn button:hover {
+  cursor: pointer;
+  background: var(--color-hover-background-dark-insta);
 }
 
-#directory-open { color: var(--color-blue-insta); }
-#archive-zip { color: var(--color-white-insta); }
-#compare-listes { color: var(--color-white-insta); }
-#pin-file { color: var(--color-white-insta); }
-#delete-file { color: var(--color-red-insta); }
+.Directories_btn button:disabled,
+.Funcs_btn button:disabled {
+  cursor: default;
+  opacity: 10%;
+  pointer-events: none;
+}
+
+#directory-open {
+  color: var(--color-blue-insta);
+}
+#archive-zip {
+  color: var(--color-white-insta);
+}
+#compare-listes {
+  color: var(--color-white-insta);
+}
+#pin-file {
+  color: var(--color-white-insta);
+}
+#delete-file {
+  color: var(--color-red-insta);
+}

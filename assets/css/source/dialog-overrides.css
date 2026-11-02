@@ -1,0 +1,128 @@
+#primary-sec ~ .app-dialog,
+body > dialog.app-dialog:not(#data-filter-dialog) {
+  position: fixed;
+  top: 50%;
+  left: calc(350px + (100vw - 350px) / 2);
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  width: min(900px, calc(100vw - 350px - 32px));
+  max-height: calc(100vh - 32px);
+  border-radius: 12px;
+}
+body > dialog.app-dialog:not(#data-filter-dialog)::backdrop {
+  background: linear-gradient(to right, transparent 0 350px, #000b 350px);
+}
+#data-filter-dialog {
+  position: fixed;
+  inset: 0;
+  transform: none;
+  z-index: 30;
+  display: block;
+  width: min(480px, calc(100vw - 32px));
+  margin: auto;
+  background: #11161c;
+}
+#data-filter-dialog:not([open]) {
+  display: none;
+}
+#data-filter-dialog::backdrop {
+  background: #000b;
+}
+#data-filter-dialog[open] {
+  position: fixed;
+}
+#data-filter-dialog > header {
+  margin-bottom: 12px;
+}
+#data-filter-dialog button {
+  width: auto;
+  margin: 0;
+  font-size: 13px;
+  text-align: center;
+}
+#data-filter-dialog #filter-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+#data-filter-dialog #data-filter-menu {
+  display: grid;
+  gap: 8px;
+}
+#data-filter-dialog .filter-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #303943;
+  border-radius: 8px;
+  background: #151a20;
+}
+#data-filter-dialog .filter-toggle-row input {
+  appearance: none;
+  flex: none;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+  border-radius: 20px;
+  background: #394453;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#data-filter-dialog .filter-toggle-row input::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 3px;
+  left: 3px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+#data-filter-dialog .filter-toggle-row input:checked {
+  background: #4a5df9;
+}
+#data-filter-dialog .filter-toggle-row input:checked::after {
+  transform: translateX(18px);
+}
+#data-filter-dialog footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+#data-filter-dialog .filter-bulk-actions,
+#data-filter-dialog .filter-submit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+#data-filter-dialog #filter-apply {
+  border: 0;
+  background: var(--color-blue-insta);
+}
+#data-filter-dialog #filter-cancel {
+  background: transparent;
+}
+#data-filter-dialog button.primary-button {
+  border: 0;
+  background: var(--color-blue-insta);
+}
+
+.copy-modal {
+  padding: 20px;
+  border: 1px solid #394453;
+  border-radius: 12px;
+  background: #11161c;
+  box-shadow: 0 18px 60px #000a;
+}
