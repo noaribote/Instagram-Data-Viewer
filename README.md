@@ -28,7 +28,8 @@ Version instable, problèmes potentiels et imprévisibles sur certaines fonction
 3) Ouvrez le dossier extrait de son archive contenant le projet dans Visual Studio Code
 4) Ouvrez un nouveau terminal
 5) Exécutez la commande ``npm i --save-dev electron`` dans ce dernier
-6) Exécutez la commande ``npm start``
+6) Exécutez la commande ``pip install instaloader``
+7) Et exécutez la commande ``npm start``
 
 [Plus d'informations concernant Electron.js](https://www.electronjs.org/)
 
