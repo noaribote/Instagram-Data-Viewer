@@ -197,7 +197,7 @@ class ModelRepository {
     }
     const { spawn } = require("child_process");
     await new Promise((resolve, reject) => {
-      const child = spawn("python", ["api/scraper.py", clean], {
+      const child = spawn("python", ["services/scraper.py", clean], {
         cwd: path.resolve(__dirname, ".."),
         windowsHide: true,
       });
