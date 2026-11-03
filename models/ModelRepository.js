@@ -274,6 +274,84 @@ class ModelRepository {
     return { success: true };
   }
 
+  async listUserMedia(username) {
+    const clean = String(username || "").trim().replace(/^@/, "");
+    if (!/^[\w.]{1,30}$/.test(clean)) throw new Error("Nom d’utilisateur invalide.");
+    const root = path.join(this.rootPath, "users", "media", clean);
+    const results = [];
+    const walk = async (folder) => {
+      let entries;
+      try { entries = await fs.promises.readdir(folder, { withFileTypes: true }); }
+      catch (error) { if (error.code === "ENOENT") return; throw error; }
+      for (const entry of entries) {
+        const fullPath = path.join(folder, entry.name);
+        if (entry.isDirectory()) await walk(fullPath);
+        else if (
+          entry.isFile() &&
+          /\.(?:jpe?g|png|gif|webp|avif|heic|heif|mp4|mov|webm|m4v)$/i.test(entry.name)
+        ) results.push({ path: path.relative(this.rootPath, fullPath).replace(/\\/g, "/"), name: entry.name, category: path.basename(folder) });
+      }
+    };
+    await walk(root);
+    return results.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  downloadUserMedia(username, onProgress) {
+    const clean = String(username || "").trim().replace(/^@/, "");
+    if (!/^[\w.]{1,30}$/.test(clean)) throw new Error("Nom d’utilisateur invalide.");
+    const { spawn } = require("child_process");
+    const output = path.join(this.rootPath, "users", "media");
+    const script = path.resolve(__dirname, "..", "services", "save--storiesig.py");
+    return new Promise((resolve, reject) => {
+      const child = spawn("python", [script, clean, "--output", output], {
+        cwd: path.resolve(__dirname, ".."),
+        windowsHide: true,
+        env: { ...process.env, PYTHONIOENCODING: "utf-8", PYTHONUNBUFFERED: "1" },
+      });
+      let buffer = "";
+      let stderr = "";
+      const outputLines = [];
+      let cancelled = false;
+      const emit = (line) => {
+        if (!line.trim()) return;
+        outputLines.push(line.trim());
+        try {
+          onProgress(JSON.parse(line));
+        } catch {
+          onProgress({ phase: "step", message: line.trim() });
+        }
+      };
+      child.stdout.setEncoding("utf8");
+      child.stderr.setEncoding("utf8");
+      child.stdout.on("data", (chunk) => {
+        buffer += chunk;
+        const lines = buffer.split(/\r?\n/);
+        buffer = lines.pop();
+        lines.forEach(emit);
+      });
+      child.stderr.on("data", (chunk) => { stderr += chunk; });
+      child.once("error", (error) => reject(new Error(`Impossible de lancer Python : ${error.message}`)));
+      child.once("close", async (code) => {
+        if (buffer.trim()) emit(buffer);
+        this.activeMediaDownload = null;
+        if (cancelled) return resolve({ cancelled: true });
+        if (code !== 0) {
+          const reportedError = outputLines.map((line) => {
+            try { return JSON.parse(line); } catch { return null; }
+          }).find((entry) => entry?.phase === "error")?.message;
+          stderr = reportedError || stderr.trim() || outputLines.at(-1) || "";
+        }
+        if (code !== 0) return reject(new Error(stderr.trim().split(/\r?\n/).at(-1) || "Le téléchargement des médias a échoué."));
+        resolve({ success: true, files: await this.listUserMedia(clean) });
+      });
+      this.activeMediaDownload = { child, cancel: () => { cancelled = true; child.kill(); } };
+    });
+  }
+
+  cancelUserMediaDownload() {
+    this.activeMediaDownload?.cancel?.();
+  }
+
   async getHeicPreview(relativePath) {
     if (typeof relativePath !== "string")
       throw new Error("Chemin de média invalide.");

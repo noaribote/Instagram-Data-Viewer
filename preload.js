@@ -7,6 +7,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
   listCachedUsers: () => ipcRenderer.invoke("list-cached-users"),
   fetchPublicUser: (username, refresh = false) =>
     ipcRenderer.invoke("fetch-public-user", username, refresh),
+  listUserMedia: (username) => ipcRenderer.invoke("list-user-media", username),
+  startUserMediaDownload: (username) => ipcRenderer.invoke("start-user-media-download", username),
+  cancelUserMediaDownload: () => ipcRenderer.send("cancel-user-media-download"),
+  onUserMediaProgress: (callback) => {
+    const listener = (_event, progress) => callback(progress);
+    ipcRenderer.on("user-media-progress", listener);
+    return () => ipcRenderer.removeListener("user-media-progress", listener);
+  },
   deleteCachedUser: (username) =>
     ipcRenderer.invoke("delete-cached-user", username),
   getHeicPreview: (relativePath) =>

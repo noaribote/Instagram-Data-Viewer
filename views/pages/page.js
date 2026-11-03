@@ -3,6 +3,7 @@
   const session = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   let requestId = 0;
   const pending = new Map();
+  const pendingMediaDownloads = new Map();
   const request = (method, ...args) =>
     new Promise((resolve, reject) => {
       const id = ++requestId;
@@ -447,6 +448,78 @@
         ),
       );
     }
+    const mediaPanel = node("section", "profile-panel profile-downloaded-media");
+    mediaPanel.append(node("h3", "", "Stories et contenu à la une téléchargés"));
+    const mediaList = node("div", "profile-media-grid");
+    const renderMedia = async () => {
+      mediaList.replaceChildren();
+      const files = await request("listUserMedia", profile.username);
+      if (!files.length) { mediaList.append(node("p", "profile-empty-note", "Aucun média téléchargé pour le moment.")); return; }
+      for (const file of files) {
+        const card = node("article", "profile-media-card");
+        card.append(node("small", "", file.category === "stories" ? "Story" : "À la une"));
+        const source = `../../model/${file.path.split("/").map(encodeURIComponent).join("/")}`;
+        if (/\.(mp4|webm|mov|m4v)$/i.test(file.name)) {
+          const player = node("video", "profile-downloaded-preview"); player.src = source; player.controls = true; player.preload = "metadata"; card.append(player);
+        } else if (/\.(jpe?g|png|gif|webp|avif)$/i.test(file.name)) {
+          const image = node("img", "profile-downloaded-preview"); image.src = source; image.alt = file.name; card.append(image);
+        } else card.append(node("p", "profile-empty-note", file.name));
+        card.append(node("small", "", file.name)); mediaList.append(card);
+      }
+    };
+    const startDownload = node("button", "secondary-button", "Voir stories et contenu à la une anonymement");
+    startDownload.type = "button";
+    startDownload.addEventListener("click", async () => {
+      const backdrop = node("dialog", "user-media-progress-dialog");
+      backdrop.addEventListener("cancel", (event) => event.preventDefault());
+      const popup = node("section", "copy-modal");
+      const title = node("h2", "", "Téléchargement du contenu");
+      const message = node("p", "", "Préparation…");
+      const bar = node("progress"); bar.max = 100; bar.removeAttribute("value");
+      const cancel = node("button", "", "Annuler"); cancel.type = "button";
+      let finished = false;
+      const closePopup = () => {
+        backdrop.close();
+        backdrop.remove();
+        startDownload.disabled = false;
+      };
+      cancel.addEventListener("click", () => {
+        if (finished) {
+          closePopup();
+          return;
+        }
+        window.parent.postMessage({ channel: "ig-view", type: "user-media-cancel" }, "*");
+        message.textContent = "Annulation en cours…";
+        cancel.disabled = true;
+      });
+      popup.append(title, message, bar, cancel); backdrop.append(popup); document.body.append(backdrop); backdrop.showModal();
+      startDownload.disabled = true;
+      const finish = async (result) => {
+        pendingMediaDownloads.delete(session);
+        finished = true;
+        cancel.disabled = false;
+        if (result.error) {
+          message.textContent = result.error;
+          bar.value = 100;
+          return;
+        }
+        closePopup();
+        if (!result.result?.cancelled) await renderMedia();
+      };
+      pendingMediaDownloads.set(session, {
+        update: (progress) => {
+          const oneLine = String(progress.message || "Téléchargement en cours…").replace(/\s+/g, " ").trim();
+          const maxLength = 80;
+          message.textContent = oneLine.length > maxLength ? `${oneLine.slice(0, maxLength - 1)}…` : oneLine;
+          if (progress.total > 0) { bar.max = progress.total; bar.value = progress.current || 0; } else bar.removeAttribute("value");
+        },
+        finish,
+      });
+      window.parent.postMessage({ channel: "ig-view", type: "api-request", session, id: ++requestId, method: "startUserMediaDownload", args: [profile.username] }, "*");
+    });
+    mediaPanel.append(startDownload, mediaList);
+    content.append(mediaPanel);
+    renderMedia().catch(() => {});
     showDialog(
       profile.full_name || `Profil @${profile.username || ""}`,
       content,
@@ -836,6 +909,14 @@
   };
 
   window.addEventListener("message", (event) => {
+    if (event.source === window.parent && event.data?.channel === "ig-view" && event.data.session === session && event.data.type === "user-media-progress") {
+      pendingMediaDownloads.get(session)?.update(event.data.progress);
+      return;
+    }
+    if (event.source === window.parent && event.data?.channel === "ig-view" && event.data.session === session && event.data.type === "user-media-finished") {
+      pendingMediaDownloads.get(session)?.finish(event.data);
+      return;
+    }
     if (
       event.source === window.parent &&
       event.data?.channel === "ig-view" &&

@@ -339,6 +339,10 @@ class ModelView {
       );
       return;
     }
+    if (message.type === "user-media-cancel") {
+      window.electronAPI.cancelUserMediaDownload();
+      return;
+    }
     if (message.type !== "api-request") return;
     const allowed = new Set([
       "getDashboardStats",
@@ -349,6 +353,8 @@ class ModelView {
       "listContactData",
       "listModelJson",
       "downloadImage",
+      "listUserMedia",
+      "startUserMediaDownload",
     ]);
     if (
       !allowed.has(message.method) ||
@@ -367,6 +373,18 @@ class ModelView {
       return;
     }
     try {
+      if (message.method === "startUserMediaDownload") {
+        const removeProgress = window.electronAPI.onUserMediaProgress((progress) => {
+          if (event.source && !event.source.closed) event.source.postMessage({ channel: "ig-view", type: "user-media-progress", session: message.session, progress }, "*");
+        });
+        try {
+          const result = await window.electronAPI.startUserMediaDownload(...(Array.isArray(message.args) ? message.args : []));
+          event.source.postMessage({ channel: "ig-view", type: "user-media-finished", session: message.session, result }, "*");
+        } catch (error) {
+          event.source.postMessage({ channel: "ig-view", type: "user-media-finished", session: message.session, error: error.message }, "*");
+        } finally { removeProgress(); }
+        return;
+      }
       const result = await window.electronAPI[message.method](
         ...(Array.isArray(message.args) ? message.args : []),
       );

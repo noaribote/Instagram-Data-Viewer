@@ -22,6 +22,15 @@ class ModelController {
     ipcMain.handle("fetch-public-user", (_event, username, refresh) =>
       this.repository.fetchPublicUser(username, refresh),
     );
+    ipcMain.handle("list-user-media", (_event, username) =>
+      this.repository.listUserMedia(username),
+    );
+    ipcMain.handle("start-user-media-download", (event, username) =>
+      this.repository.downloadUserMedia(username, (progress) => {
+        if (!event.sender.isDestroyed()) event.sender.send("user-media-progress", progress);
+      }),
+    );
+    ipcMain.on("cancel-user-media-download", () => this.repository.cancelUserMediaDownload());
     ipcMain.handle("delete-cached-user", (_event, username) =>
       this.repository.deleteCachedUser(username),
     );
