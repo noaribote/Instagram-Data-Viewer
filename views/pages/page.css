@@ -688,6 +688,9 @@ body {
   color: var(--muted);
   text-align: center;
 }
+.cache-empty-state {
+  grid-column: 1 / -1;
+}
 @media (max-width: 600px) {
   body {
     padding: 16px;

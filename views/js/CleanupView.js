@@ -13,13 +13,13 @@ class CleanupView {
     this.progress.hidden = true;
     this.status.hidden = true;
     this.yesButton.hidden = false;
-    this.noButton.textContent = "Annuler";
+    this.noButton.hidden = false;
     this.modal.hidden = false;
   }
 
   start() {
     this.yesButton.disabled = true;
-    this.noButton.disabled = true;
+    this.noButton.hidden = true;
     this.message.textContent = "Préparation de la suppression…";
     this.progress.hidden = false;
     this.progress.max = 1;
@@ -52,14 +52,12 @@ class CleanupView {
     this.status.hidden = true;
     this.progress.hidden = true;
     this.yesButton.hidden = true;
-    this.noButton.textContent = "Fermer";
   }
   close() {
     this.modal.hidden = true;
     this.yesButton.hidden = false;
     this.yesButton.disabled = false;
-    this.noButton.disabled = false;
-    this.noButton.textContent = "Annuler";
+    this.noButton.hidden = false;
   }
 }
 

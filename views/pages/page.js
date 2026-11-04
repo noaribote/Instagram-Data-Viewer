@@ -458,7 +458,13 @@
       if (!files.length) { mediaList.append(node("p", "profile-empty-note", "Aucun média téléchargé.")); return; }
       for (const file of files) {
         const card = node("article", "profile-media-card");
-        card.append(node("small", "", file.category === "stories" ? "Story" : "À la une"));
+        const mediaLabels = {
+          stories: "Story",
+          highlights: "À la une",
+          posts: "Post",
+          reels: "Reel",
+        };
+        card.append(node("small", "", mediaLabels[file.category] || file.category));
         const source = `../../model/${file.path.split("/").map(encodeURIComponent).join("/")}`;
         if (/\.(mp4|webm|mov|m4v)$/i.test(file.name)) {
           const player = node("video", "profile-downloaded-preview"); player.src = source; player.controls = true; player.preload = "metadata"; card.append(player);
@@ -745,7 +751,7 @@
         grid.append(
           node(
             "p",
-            "empty-state",
+            "empty-state cache-empty-state",
             "Aucun profil n’est encore enregistré dans le cache.",
           ),
         );
