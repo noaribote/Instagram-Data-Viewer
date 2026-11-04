@@ -30,6 +30,33 @@ main {
   padding: 24px clamp(16px, 3vw, 44px);
 }
 
+.message-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  margin: 0 0 0 auto;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.message-group-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.message-back-button:hover {
+  background: #222a33;
+}
+
 header {
   display: flex;
   flex-direction: column;

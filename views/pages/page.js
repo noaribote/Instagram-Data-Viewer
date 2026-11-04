@@ -45,6 +45,7 @@
     const back = node("button", "page-back", "Retour");
     back.type = "button";
     back.addEventListener("click", goHome);
+    if (PAGE === "messages") back.textContent = "Retour";
     header.append(heading, back);
     const content = node("section", "page-content");
     shell.append(header, content);
@@ -284,7 +285,7 @@
       highlightSection.append(
         node("p", "profile-empty-note", "Aucune story à la une disponible."),
       );
-    content.append(highlightSection);
+    if (!profile.is_private) content.append(highlightSection);
 
     const omitted = new Set([
       "profile_pic_url",
@@ -454,7 +455,7 @@
     const renderMedia = async () => {
       mediaList.replaceChildren();
       const files = await request("listUserMedia", profile.username);
-      if (!files.length) { mediaList.append(node("p", "profile-empty-note", "Aucun média téléchargé pour le moment.")); return; }
+      if (!files.length) { mediaList.append(node("p", "profile-empty-note", "Aucun média téléchargé.")); return; }
       for (const file of files) {
         const card = node("article", "profile-media-card");
         card.append(node("small", "", file.category === "stories" ? "Story" : "À la une"));
@@ -517,9 +518,11 @@
       });
       window.parent.postMessage({ channel: "ig-view", type: "api-request", session, id: ++requestId, method: "startUserMediaDownload", args: [profile.username] }, "*");
     });
-    mediaPanel.append(startDownload, mediaList);
-    content.append(mediaPanel);
-    renderMedia().catch(() => {});
+    if (!profile.is_private) {
+      mediaPanel.append(startDownload, mediaList);
+      content.append(mediaPanel);
+      renderMedia().catch(() => {});
+    }
     showDialog(
       profile.full_name || `Profil @${profile.username || ""}`,
       content,
@@ -776,12 +779,7 @@
             user.username.toLocaleLowerCase() ===
             username.replace(/^@/, "").toLocaleLowerCase(),
         );
-        result.append(
-          profileCard(
-            cached || profile,
-            cached ? { cached: true, onRefresh: load } : {},
-          ),
-        );
+        profileDialog(cached?.data || profile);
       } catch (error) {
         const message = String(error.message || "").toLowerCase();
         status.textContent =

@@ -83,11 +83,15 @@ def main() -> int:
     parser.add_argument("profil", nargs="?", help="@username ou lien de profil Instagram")
     parser.add_argument("-o", "--output", type=Path, default=Path("telechargements"),
                         help="dossier de sortie (défaut : ./telechargements)")
-    parser.add_argument("--visible", action="store_true", default=True,
-                        help="afficher le navigateur pendant l'exécution (activé par défaut)")
+    visibility = parser.add_mutually_exclusive_group()
+    visibility.add_argument("--visible", action="store_true", default=True,
+                            help="Show the browser during execution")
+    visibility.add_argument("--headless", action="store_true",
+                            help="Run without a browser window (default)")
     parser.add_argument("--timeout", type=int, default=90,
                         help="secondes d'attente des résultats (défaut : 90)")
     args = parser.parse_args()
+    show_browser = args.visible and not args.headless
 
     query = args.profil or input("@username ou lien Instagram : ").strip()
     if not query:
@@ -100,11 +104,23 @@ def main() -> int:
 
     with sync_playwright() as p:
         edge_path = find_edge()
+        background_window_args = [
+            "--window-size=320,240",
+            "--window-position=-32000,-32000",
+            "--start-minimized",
+        ]
         if edge_path:
-            browser = p.chromium.launch(executable_path=str(edge_path), headless=not args.visible)
+            browser = p.chromium.launch(
+                executable_path=str(edge_path),
+                headless=not show_browser,
+                args=background_window_args if show_browser else [],
+            )
         else:
             try:
-                browser = p.chromium.launch(headless=not args.visible)
+                browser = p.chromium.launch(
+                    headless=not show_browser,
+                    args=background_window_args if show_browser else [],
+                )
             except Exception as exc:
                 print(
                     "Aucun navigateur compatible trouvé. Installe Edge ou Chromium avec :\n"

@@ -938,6 +938,7 @@
     return section;
   }
 
+  let activeMessageGroup = false;
   function renderDocument(path, data, label) {
     app.replaceChildren();
     const header = document.createElement("header");
@@ -945,13 +946,30 @@
     eyebrow.className = "eyebrow";
     eyebrow.textContent =
       path
-        .split(/[\\\\/]/)
+        .split(/[\\/]/)
         .slice(0, -1)
         .map(humanize)
         .join(" / ") || "Donn\u00e9es Instagram";
     const title = document.createElement("h1");
-    appendHighlighted(title, label || humanize(path.split(/[\\/]/).pop()));
-    header.append(eyebrow, title);
+    appendHighlighted(title, label || humanize(path.split(/[\/]/).pop()));
+    if (activeMessageGroup) {
+      const back = document.createElement("button");
+      back.type = "button";
+      back.className = "message-back-button";
+      back.textContent = "Retour";
+      back.addEventListener("click", () =>
+        window.parent.postMessage(
+          { channel: "ig-view-shell", type: "messages-back" },
+          "*",
+        ),
+      );
+      const titleRow = document.createElement("div");
+      titleRow.className = "message-group-title-row";
+      titleRow.append(title, back);
+      header.append(eyebrow, titleRow);
+    } else {
+      header.append(eyebrow, title);
+    }
     app.append(header);
 
     if (Array.isArray(data)) {
@@ -1015,6 +1033,7 @@
   window.addEventListener("message", (event) => {
     if (event.source !== window.parent || event.data?.type !== "instagram-json")
       return;
+    activeMessageGroup = event.data.messageGroup === true;
     activeSearchQuery = repairText(event.data.searchQuery || "");
     renderDocument(event.data.path, event.data.data, event.data.label);
   });

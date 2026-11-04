@@ -40,6 +40,11 @@
   overflow-wrap: anywhere;
   font-size: 18px;
 }
+.details-dialog .app-dialog-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 .app-dialog-header button,
 .app-dialog > header button {
   flex: 0 0 auto;

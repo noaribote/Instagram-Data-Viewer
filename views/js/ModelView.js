@@ -259,10 +259,19 @@ class ModelView {
     this.jsonActions?.remove();
     this.jsonActions = null;
     this.pendingSelection = null;
+    this.currentPage = page;
     this.pageFrame.src = `pages/${page}.html`;
   }
 
   async handlePageMessage(event) {
+    if (
+      event.source === this.contentFrame.contentWindow &&
+      event.data?.channel === "ig-view-shell" &&
+      event.data.type === "messages-back"
+    ) {
+      this.openPage("messages");
+      return;
+    }
     if (
       event.source === this.contentFrame.contentWindow &&
       event.data?.channel === "ig-media" &&
@@ -472,6 +481,7 @@ class ModelView {
       label: selection.label,
       data: selection.data,
       searchQuery: selection.searchQuery,
+      messageGroup: selection.messageGroup === true,
     };
     this.dashboard.hidden = true;
     this.pageFrame.hidden = true;
@@ -491,7 +501,7 @@ class ModelView {
     pin.append(icon, document.createTextNode(" Épingler"));
     const remove = document.createElement("button");
     remove.type = "button";
-    remove.textContent = "Supprimer ce JSON";
+    remove.textContent = "Supprimer";
     const current = selection.path;
     const normalizePath = (value) => String(value || "").replace(/\\/g, "/");
     const pins = await window.electronAPI.listPinnedJson();
@@ -511,7 +521,7 @@ class ModelView {
       if (
         !(await this.confirmAction(
           "Supprimer ce fichier JSON",
-          "Le fichier JSON actuellement ouvert sera supprimé du dossier model.",
+          "Le fichier actuellement ouvert sera supprimé définitivement.",
         ))
       )
         return;
