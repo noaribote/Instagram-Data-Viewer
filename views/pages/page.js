@@ -450,7 +450,7 @@
       );
     }
     const mediaPanel = node("section", "profile-panel profile-downloaded-media");
-    mediaPanel.append(node("h3", "", "Stories et contenu à la une téléchargés"));
+    mediaPanel.append(node("h3", "", "Stories et publications (anonyme)"));
     const mediaList = node("div", "profile-media-grid");
     const renderMedia = async () => {
       mediaList.replaceChildren();
@@ -462,13 +462,15 @@
         const source = `../../model/${file.path.split("/").map(encodeURIComponent).join("/")}`;
         if (/\.(mp4|webm|mov|m4v)$/i.test(file.name)) {
           const player = node("video", "profile-downloaded-preview"); player.src = source; player.controls = true; player.preload = "metadata"; card.append(player);
-        } else if (/\.(jpe?g|png|gif|webp|avif)$/i.test(file.name)) {
+        } else if (/\.(jpe?g|png|gif|webp|avif|bmp|tiff?|heic|heif)$/i.test(file.name)) {
           const image = node("img", "profile-downloaded-preview"); image.src = source; image.alt = file.name; card.append(image);
-        } else card.append(node("p", "profile-empty-note", file.name));
-        card.append(node("small", "", file.name)); mediaList.append(card);
+        } else {
+          const link = node("a", "profile-empty-note", file.name); link.href = source; link.target = "_blank"; link.rel = "noopener noreferrer"; card.append(link);
+        }
+        mediaList.append(card);
       }
     };
-    const startDownload = node("button", "secondary-button", "Voir stories et contenu à la une anonymement");
+    const startDownload = node("button", "secondary-button", "Tout télécharger");
     startDownload.type = "button";
     startDownload.addEventListener("click", async () => {
       const backdrop = node("dialog", "user-media-progress-dialog");
@@ -557,7 +559,7 @@
     );
     if (profile.biography) card.append(node("p", "", profile.biography));
     const actions = node("div", "card-actions");
-    const view = node("button", "secondary-button", "Voir le profil complet");
+    const view = node("button", "secondary-button", "Voir le profil");
     view.type = "button";
     view.addEventListener("click", () => profileDialog(profile));
     actions.append(view);

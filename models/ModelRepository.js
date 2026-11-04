@@ -277,7 +277,11 @@ class ModelRepository {
   async listUserMedia(username) {
     const clean = String(username || "").trim().replace(/^@/, "");
     if (!/^[\w.]{1,30}$/.test(clean)) throw new Error("Nom d’utilisateur invalide.");
-    const root = path.join(this.rootPath, "users", "media", clean);
+    const mediaRoot = path.join(this.rootPath, "users", "media");
+    const root = path.join(mediaRoot, clean);
+    // Older downloads used safe_name(), which removed trailing underscores
+    // from usernames (for example coline26_ was stored as coline26).
+    const legacyRoot = path.join(mediaRoot, clean.replace(/_+$/, ""));
     const results = [];
     const walk = async (folder) => {
       let entries;
@@ -288,11 +292,12 @@ class ModelRepository {
         if (entry.isDirectory()) await walk(fullPath);
         else if (
           entry.isFile() &&
-          /\.(?:jpe?g|png|gif|webp|avif|heic|heif|mp4|mov|webm|m4v)$/i.test(entry.name)
+          /\.(?:jpe?g|png|gif|webp|avif|bmp|tiff?|heic|heif|mp4|mov|webm|m4v|3gp|mkv)$/i.test(entry.name)
         ) results.push({ path: path.relative(this.rootPath, fullPath).replace(/\\/g, "/"), name: entry.name, category: path.basename(folder) });
       }
     };
     await walk(root);
+    if (legacyRoot !== root) await walk(legacyRoot);
     return results.sort((a, b) => a.name.localeCompare(b.name));
   }
 

@@ -593,12 +593,9 @@
         },
         { once: true },
       );
-      const renderedPlayer =
-        reference.type === "image"
-          ? makeImageDownloadable(player, {
-              relativePath: reference.relativePath,
-            })
-          : player;
+      const renderedPlayer = makeImageDownloadable(player, {
+        relativePath: reference.relativePath,
+      });
       if (reference.needsHeicPreview) {
         requestHeicPreview(reference.relativePath)
           .then((previewUrl) => {
@@ -617,7 +614,7 @@
       } else player.src = reference.url;
       return renderedPlayer;
     };
-    if (reference.type !== "audio") wrapper.append(createPlayer());
+    wrapper.append(createPlayer());
     const button = document.createElement("button");
     button.type = "button";
     button.className = "media-open";
@@ -651,6 +648,33 @@
       dialog.showModal();
     });
     wrapper.append(button);
+    const download = document.createElement("button");
+    download.type = "button";
+    download.className = "media-open";
+    download.textContent = "Télécharger le fichier";
+    download.addEventListener("click", async () => {
+      download.disabled = true;
+      try {
+        const result = await new Promise((resolve, reject) => {
+          const id = ++mediaPreviewRequestId;
+          const timeout = window.setTimeout(() => {
+            pendingImageDownloads.delete(id);
+            reject(new Error("Le téléchargement a expiré."));
+          }, 60000);
+          pendingImageDownloads.set(id, {
+            resolve: (value) => { window.clearTimeout(timeout); resolve(value); },
+            reject: (error) => { window.clearTimeout(timeout); reject(error); },
+          });
+          window.parent.postMessage({ channel: "ig-media", type: "download-request", id, source: { relativePath: reference.relativePath } }, "*");
+        });
+        download.textContent = result?.canceled ? "Téléchargement annulé" : "Fichier enregistré";
+      } catch (error) {
+        download.textContent = error.message;
+      } finally {
+        download.disabled = false;
+      }
+    });
+    wrapper.append(download);
     return wrapper;
   }
 

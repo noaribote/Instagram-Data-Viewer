@@ -452,7 +452,7 @@
   cursor: pointer;
 }
 
-#dashboard-view #drop-target h1 {
+#dashboard-view #drop-target i {
   margin: 0;
   color: #8995ff;
   display: inline-block;

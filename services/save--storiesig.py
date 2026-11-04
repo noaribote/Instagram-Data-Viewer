@@ -28,7 +28,7 @@ def safe_name(value: str) -> str:
     value = unquote(value).strip()
     value = re.sub(r"[<>:\"/\\|?*\x00-\x1f]", "_", value)
     value = re.sub(r"\s+", "_", value).strip("._")
-    return value[:100] or "profil"
+    return value[:100].strip(".") or "profil"
 
 
 def filename_for(url: str, content_type: str | None, index: int) -> str:
@@ -46,14 +46,11 @@ def filename_for(url: str, content_type: str | None, index: int) -> str:
     return name
 
 
-def unique_path(folder: Path, name: str) -> Path:
-    candidate = folder / name
-    stem, suffix = candidate.stem, candidate.suffix
-    counter = 1
-    while candidate.exists():
-        candidate = folder / f"{stem}_{counter}{suffix}"
-        counter += 1
-    return candidate
+def is_heic(name: str, content_type: str | None) -> bool:
+    mime = (content_type or "").split(";", 1)[0].strip().lower()
+    return Path(name).suffix.lower() in {".heic", ".heif"} or mime in {
+        "image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"
+    }
 
 
 def wait_for_media_to_settle(page, selector: str, timeout: int, *, minimum_wait: float = 3.0) -> list[str]:
@@ -83,15 +80,12 @@ def main() -> int:
     parser.add_argument("profil", nargs="?", help="@username ou lien de profil Instagram")
     parser.add_argument("-o", "--output", type=Path, default=Path("telechargements"),
                         help="dossier de sortie (défaut : ./telechargements)")
-    visibility = parser.add_mutually_exclusive_group()
-    visibility.add_argument("--visible", action="store_true", default=True,
-                            help="Show the browser during execution")
-    visibility.add_argument("--headless", action="store_true",
-                            help="Run without a browser window (default)")
+    parser.add_argument("--headless", action="store_true",
+                        help="Run without a browser window (for manual use only)")
     parser.add_argument("--timeout", type=int, default=90,
                         help="secondes d'attente des résultats (défaut : 90)")
     args = parser.parse_args()
-    show_browser = args.visible and not args.headless
+    show_browser = not args.headless
 
     query = args.profil or input("@username ou lien Instagram : ").strip()
     if not query:
@@ -104,11 +98,7 @@ def main() -> int:
 
     with sync_playwright() as p:
         edge_path = find_edge()
-        background_window_args = [
-            "--window-size=320,240",
-            "--window-position=-32000,-32000",
-            "--start-minimized",
-        ]
+        background_window_args = []
         if edge_path:
             browser = p.chromium.launch(
                 executable_path=str(edge_path),
@@ -276,9 +266,12 @@ def main() -> int:
                         print(f"[{index}/{len(all_media)}] Fichier vide : {url}")
                         continue
                     name = filename_for(url, response.headers.get("content-type"), index)
+                    if is_heic(name, response.headers.get("content-type")):
+                        print(f"[{index}/{len(all_media)}] [ignoré] fichier HEIC/HEIF : {name}")
+                        continue
                     category_folder = profile_folder / category
                     category_folder.mkdir(parents=True, exist_ok=True)
-                    destination = unique_path(category_folder, name)
+                    destination = category_folder / name
                     destination.write_bytes(data)
                     print(f"[{index}/{len(all_media)}] [{category}] {destination.name} ({len(data):,} octets)")
                     downloaded += 1
