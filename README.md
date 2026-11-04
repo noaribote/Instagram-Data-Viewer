@@ -29,7 +29,8 @@ Version instable, problèmes potentiels et imprévisibles sur certaines fonction
 4) Ouvrez un nouveau terminal
 5) Exécutez la commande ``npm i --save-dev electron`` dans ce dernier
 6) Exécutez la commande ``pip install instaloader``
-7) Et exécutez la commande ``npm start``
+7) Exécutez les commandes ``pip install instaloader playwright`` et ``python -m playwright install chromium``
+8) Et exécutez la commande ``npm start``
 
 [Plus d'informations concernant Electron.js](https://www.electronjs.org/)
 
