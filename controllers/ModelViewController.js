@@ -6,6 +6,7 @@ class ModelViewController {
     this.jsonRefreshInProgress = false;
     this.files = [];
     this.jsonSignature = null;
+    this.initialJsonLoadComplete = false;
   }
 
   start() {
@@ -69,6 +70,10 @@ class ModelViewController {
       console.error("Impossible de lister les fichiers JSON de model :", error);
     } finally {
       this.jsonRefreshInProgress = false;
+      if (!this.initialJsonLoadComplete) {
+        this.initialJsonLoadComplete = true;
+        window.dispatchEvent(new Event("initial-model-json-load-complete"));
+      }
     }
   }
 

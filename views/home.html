@@ -19,6 +19,10 @@
     />
   </head>
   <body>
+    <div id="app-loader" role="status" aria-label="Chargement de l’application">
+      <img src="../assets/images/logo.png" alt="" />
+      <progress aria-label="Chargement en cours"></progress>
+    </div>
     <nav class="FlexCenter" aria-label="Navigation principale">
       <button
         class="brand FlexCenter2"
@@ -195,5 +199,11 @@
     <script src="../controllers/ImportViewController.js"></script>
     <script src="../controllers/CleanupViewController.js"></script>
     <script src="../renderer.js"></script>
+    <script>
+      window.addEventListener("initial-model-json-load-complete", () => {
+        document.body.classList.add("app-loaded");
+        document.getElementById("app-loader")?.setAttribute("aria-hidden", "true");
+      }, { once: true });
+    </script>
   </body>
 </html>
