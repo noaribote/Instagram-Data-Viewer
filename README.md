@@ -23,8 +23,8 @@ Version instable, problèmes potentiels et imprévisibles sur certaines fonction
 
 # Lancer le projet (~10 minutes) :
 
-1) Installez Python
-2) Installez Node.js
+1) Installez [Python](https://www.python.org/downloads/)
+2) Installez [Node.js](https://nodejs.org/en/download)
 3) Extrayez le projet de l'archive téléchargée
 4) Si vous êtes sur **Windows 10, 11**, lancez le fichier ``start.bat``. Autrement exécutez ``start.sh``
 
