@@ -23,14 +23,10 @@ Version instable, problèmes potentiels et imprévisibles sur certaines fonction
 
 # Lancer le projet (~10 minutes) :
 
-1) Installez Visual Studio Code
-2) Installez Node
-3) Ouvrez le dossier extrait de son archive contenant le projet dans Visual Studio Code
-4) Ouvrez un nouveau terminal
-5) Exécutez la commande ``npm i --save-dev electron`` dans ce dernier
-6) Exécutez la commande ``pip install instaloader``
-7) Exécutez les commandes ``pip install instaloader playwright`` et ``python -m playwright install chromium``
-8) Et exécutez la commande ``npm start``
+1) Installez Python
+2) Installez Node.js
+3) Extrayez le projet de l'archive téléchargée
+4) Si vous êtes sur **Windows 10, 11**, lancez le fichier ``start.bat``. Autrement exécutez ``start.sh``
 
 [Plus d'informations concernant Electron.js](https://www.electronjs.org/)
 
