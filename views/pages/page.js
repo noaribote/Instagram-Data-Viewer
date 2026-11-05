@@ -751,7 +751,7 @@
         grid.append(
           node(
             "p",
-            "empty-state cache-empty-state",
+            "empty-state",
             "Aucun profil n’est encore enregistré dans le cache.",
           ),
         );
