@@ -54,6 +54,8 @@ class ModelController {
       } catch {
         /* Use a safe generic filename if the source has no usable name. */
       }
+      if (/\.hei[cf]$/i.test(suggestedName))
+        suggestedName = `${path.basename(suggestedName, path.extname(suggestedName))}.png`;
       if (
         !suggestedName ||
         suggestedName === "." ||
@@ -73,8 +75,6 @@ class ModelController {
               "png",
               "gif",
               "webp",
-              "heic",
-              "heif",
               "avif",
               "bmp",
             ],

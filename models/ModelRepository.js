@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { convertHeicToPng, isHeic, pngPath } = require("./ImageConversion");
 
 class ModelRepository {
   constructor(rootPath) {
@@ -489,13 +490,15 @@ class ModelRepository {
       const fullPath = path.resolve(this.rootPath, normalized);
       if (!fullPath.startsWith(`${this.rootPath}${path.sep}`))
         throw new Error("Chemin de photo invalide.");
+      const outputPath = isHeic(fullPath) ? pngPath(destinationPath) : destinationPath;
       try {
-        await fs.promises.copyFile(fullPath, destinationPath);
+        if (isHeic(fullPath)) await convertHeicToPng(fullPath, outputPath);
+        else await fs.promises.copyFile(fullPath, outputPath);
       } catch (error) {
         if (error.code === "ENOENT") throw new Error("Photo manquante.");
         throw error;
       }
-      return { success: true };
+      return { success: true, path: outputPath };
     }
 
     let url;
@@ -560,8 +563,20 @@ class ModelRepository {
       chunks.push(buffer);
     }
     if (!totalBytes) throw new Error("La photo distante est vide.");
-    await fs.promises.writeFile(destinationPath, Buffer.concat(chunks));
-    return { success: true };
+    const imageBuffer = Buffer.concat(chunks);
+    if (isHeic(url.pathname, contentType)) {
+      const outputPath = pngPath(destinationPath);
+      const temporaryInput = `${destinationPath}.${process.pid}.${Date.now()}.heic`;
+      try {
+        await fs.promises.writeFile(temporaryInput, imageBuffer);
+        await convertHeicToPng(temporaryInput, outputPath);
+      } finally {
+        await fs.promises.rm(temporaryInput, { force: true });
+      }
+      return { success: true, path: outputPath };
+    }
+    await fs.promises.writeFile(destinationPath, imageBuffer);
+    return { success: true, path: destinationPath };
   }
 
   async deleteJson(relativePath) {

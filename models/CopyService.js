@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { convertHeicToPng, isHeic, pngPath } = require("./ImageConversion");
 
 class CopyService {
   constructor(destination) {
@@ -27,6 +28,10 @@ class CopyService {
       for (const sourcePath of sourcePaths)
         await this.collectFiles(sourcePath, files);
       if (job.cancelled) return this.cancelled(sender);
+      for (const file of files) {
+        file.convert = isHeic(file.path);
+        if (file.convert) file.outputName = path.basename(pngPath(file.path));
+      }
       const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
       const existingPaths = [];
       for (const file of files) {
@@ -70,11 +75,15 @@ class CopyService {
         const previousStat = job.replace
           ? await fs.promises.stat(targetPath).catch(() => null)
           : null;
-        await fs.promises.copyFile(
-          file.path,
-          targetPath,
-          job.replace ? 0 : fs.constants.COPYFILE_EXCL,
-        );
+        if (file.convert) {
+          await convertHeicToPng(file.path, targetPath);
+        } else {
+          await fs.promises.copyFile(
+            file.path,
+            targetPath,
+            job.replace ? 0 : fs.constants.COPYFILE_EXCL,
+          );
+        }
         job.copiedPaths.push(targetPath);
         job.copiedBytesDelta += file.size - (previousStat?.size || 0);
         copiedBytes += file.size;
@@ -145,10 +154,16 @@ class CopyService {
     });
   }
   getTargetPath(file) {
+    if (file.root === file.path)
+      return path.join(
+        this.destination,
+        file.outputName || path.basename(file.path),
+      );
     return path.join(
       this.destination,
       path.basename(file.root),
-      path.relative(file.root, file.path),
+      path.dirname(path.relative(file.root, file.path)),
+      file.outputName || path.basename(file.path),
     );
   }
 

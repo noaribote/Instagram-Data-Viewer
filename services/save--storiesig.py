@@ -266,14 +266,25 @@ def main() -> int:
                         print(f"[{index}/{len(all_media)}] Fichier vide : {url}")
                         continue
                     name = filename_for(url, response.headers.get("content-type"), index)
-                    if is_heic(name, response.headers.get("content-type")):
-                        print(f"[{index}/{len(all_media)}] [ignoré] fichier HEIC/HEIF : {name}")
-                        continue
                     category_folder = profile_folder / category
                     category_folder.mkdir(parents=True, exist_ok=True)
                     destination = category_folder / name
-                    destination.write_bytes(data)
-                    print(f"[{index}/{len(all_media)}] [{category}] {destination.name} ({len(data):,} octets)")
+                    if is_heic(name, response.headers.get("content-type")):
+                        destination = destination.with_suffix(".png")
+                        temporary_source = destination.with_name(destination.stem + ".source.heic")
+                        temporary_source.write_bytes(data)
+                        try:
+                            subprocess.run(
+                                ["ffmpeg", "-y", "-v", "error", "-i", str(temporary_source), "-frames:v", "1", str(destination)],
+                                check=True,
+                                capture_output=True,
+                                text=True,
+                            )
+                        finally:
+                            temporary_source.unlink(missing_ok=True)
+                    else:
+                        destination.write_bytes(data)
+                    print(f"[{index}/{len(all_media)}] [{category}] {destination.name} ({destination.stat().st_size:,} octets)")
                     downloaded += 1
                 except Exception as exc:
                     print(f"[{index}/{len(all_media)}] Échec pour {url} : {exc}")
