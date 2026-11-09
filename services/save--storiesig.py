@@ -88,11 +88,16 @@ def main() -> int:
     parser.add_argument("-o", "--output", type=Path, default=Path("telechargements"),
                         help="dossier de sortie (défaut : ./telechargements)")
     parser.add_argument("--headless", action="store_true",
-                        help="Run without a browser window (for manual use only)")
+                        help="Run without displaying a browser window")
     parser.add_argument("--timeout", type=int, default=90,
                         help="secondes d'attente des résultats (défaut : 90)")
     args = parser.parse_args()
     show_browser = not args.headless
+    browser_args = (
+        ["--window-position=-32000,-32000", "--window-size=1280,900"]
+        if show_browser and os.name == "nt"
+        else []
+    )
 
     query = args.profil or input("@username ou lien Instagram : ").strip()
     if not query:
@@ -110,13 +115,13 @@ def main() -> int:
             browser = p.chromium.launch(
                 executable_path=str(edge_path),
                 headless=not show_browser,
-                args=background_window_args if show_browser else [],
+                args=browser_args,
             )
         else:
             try:
                 browser = p.chromium.launch(
                     headless=not show_browser,
-                    args=background_window_args if show_browser else [],
+                    args=browser_args,
                 )
             except Exception as exc:
                 print(
