@@ -766,6 +766,20 @@
     const lookup = async () => {
       const username = input.value.trim();
       if (!username) return;
+      const normalizedUsername = username.replace(/^@/, "").toLowerCase();
+      const listNoUsername = await request("getNoUsernameList");
+      if (
+        Array.isArray(listNoUsername) && listNoUsername.some(
+          (blockedUsername) =>
+            String(blockedUsername).replace(/^@/, "").toLowerCase() ===
+            normalizedUsername,
+        )
+      ) {
+        status.textContent =
+          "L'utilisateur souhaite préserver son anonyma. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter le développeur RIBOTE--MORAL Noa.";
+        result.replaceChildren();
+        return;
+      }
       search.disabled = true;
       lookupProgress.wrap.hidden = false;
       lookupProgress.bar.removeAttribute("value");

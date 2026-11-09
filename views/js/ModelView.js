@@ -358,6 +358,7 @@ class ModelView {
       "getConnectionComparison",
       "listCachedUsers",
       "fetchPublicUser",
+      "getNoUsernameList",
       "deleteCachedUser",
       "listContactData",
       "listModelJson",

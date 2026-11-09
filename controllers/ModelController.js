@@ -22,6 +22,13 @@ class ModelController {
     ipcMain.handle("fetch-public-user", (_event, username, refresh) =>
       this.repository.fetchPublicUser(username, refresh),
     );
+    ipcMain.handle("get-no-username-list", async () => {
+      const filePath = path.join(__dirname, "..", "models", "listNoUsername.json");
+      const usernames = require(filePath);
+      if (!Array.isArray(usernames))
+        throw new Error("Le fichier listNoUsername.json doit contenir une liste.");
+      return usernames;
+    });
     ipcMain.handle("list-user-media", (_event, username) =>
       this.repository.listUserMedia(username),
     );
