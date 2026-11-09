@@ -16,6 +16,12 @@
       ],
       "icon": "icon.ico"
     },
+    "mac": {
+      "target": ["dmg", "zip"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    },
     "nsis": {
       "oneClick": false,
       "installerIcon": "icon.ico",

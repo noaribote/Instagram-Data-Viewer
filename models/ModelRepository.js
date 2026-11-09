@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { convertHeicToPng, isHeic, pngPath } = require("./ImageConversion");
+const { getPythonCommand } = require("./PythonRuntime");
 
 class ModelRepository {
   constructor(rootPath) {
@@ -198,7 +199,7 @@ class ModelRepository {
     }
     const { spawn } = require("child_process");
     await new Promise((resolve, reject) => {
-      const child = spawn("python", ["services/scraper.py", clean], {
+      const child = spawn(getPythonCommand(), ["services/scraper.py", clean], {
         cwd: path.resolve(__dirname, ".."),
         windowsHide: true,
       });
@@ -256,7 +257,7 @@ class ModelRepository {
     const clean = String(username || "")
       .trim()
       .replace(/^@/, "");
-    if (!/^[\w.]{1,30}$/.test(clean))
+    if (!/^[\w.]{1,30}$/.test(clean) || clean === "." || clean === "..")
       throw new Error("Nom d’utilisateur invalide.");
     const filePath = path.join(this.rootPath, "users", `${clean}.json`);
     let cached;
@@ -271,6 +272,40 @@ class ModelRepository {
     );
     if (cachedUsername.toLocaleLowerCase() !== clean.toLocaleLowerCase())
       throw new Error("Le cache ne correspond pas au compte demandé.");
+    const mediaRoot = path.join(this.rootPath, "users", "media");
+    const removeMediaDirectory = async (directory) => {
+      try {
+        const stats = await fs.promises.lstat(directory);
+        if (stats.isDirectory())
+          await fs.promises.rm(directory, { recursive: true, force: true });
+      } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+      }
+    };
+
+    await removeMediaDirectory(path.join(mediaRoot, clean));
+    const legacyName = clean.replace(/[._]+$/, "");
+    if (legacyName && legacyName !== clean) {
+      let anotherProfileExists = false;
+      try {
+        const userEntries = await fs.promises.readdir(
+          path.join(this.rootPath, "users"),
+          { withFileTypes: true },
+        );
+        anotherProfileExists = userEntries.some(
+          (entry) =>
+            entry.isFile() &&
+            path.extname(entry.name).toLocaleLowerCase() === ".json" &&
+            path.basename(entry.name, path.extname(entry.name)).toLocaleLowerCase() ===
+              legacyName.toLocaleLowerCase(),
+        );
+      } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+      }
+      if (!anotherProfileExists)
+        await removeMediaDirectory(path.join(mediaRoot, legacyName));
+    }
+
     await fs.promises.unlink(filePath);
     return { success: true };
   }
@@ -309,7 +344,7 @@ class ModelRepository {
     const output = path.join(this.rootPath, "users", "media");
     const script = path.resolve(__dirname, "..", "services", "save--storiesig.py");
     return new Promise((resolve, reject) => {
-      const child = spawn("python", [script, clean, "--output", output], {
+      const child = spawn(getPythonCommand(), [script, clean, "--output", output], {
         cwd: path.resolve(__dirname, ".."),
         windowsHide: true,
         env: { ...process.env, PYTHONIOENCODING: "utf-8", PYTHONUNBUFFERED: "1" },

@@ -3,6 +3,7 @@ import argparse
 import mimetypes
 import os
 import re
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -13,6 +14,12 @@ SITE = "https://storiesig.info"
 
 
 def find_edge() -> Path | None:
+    for browser in ("msedge", "chromium", "chromium-browser", "google-chrome"):
+        executable = shutil.which(browser)
+        if executable:
+            return Path(executable)
+    if os.name != "nt":
+        return None
     candidates = [
         Path(os.environ.get("PROGRAMFILES(X86)", r"C:\Program Files (x86)")) / "Microsoft/Edge/Application/msedge.exe",
         Path(os.environ.get("PROGRAMFILES", r"C:\Program Files")) / "Microsoft/Edge/Application/msedge.exe",

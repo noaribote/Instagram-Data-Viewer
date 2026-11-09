@@ -27,7 +27,7 @@ class AppController {
     });
     Menu.setApplicationMenu(null);
     this.mainWindow.setIcon(
-      path.join(__dirname, "..", "assets/images/logo.ico"),
+      path.join(__dirname, "..", "assets/images/logo.png"),
     );
     this.mainWindow.webContents.setWindowOpenHandler(({ url }) => {
       try {
