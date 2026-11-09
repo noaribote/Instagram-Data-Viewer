@@ -4,7 +4,14 @@ Version instable, problèmes potentiels et imprévisibilités sur certaines fonc
 - Veuillez attendre la sortie d'une **version stable** avant de lancer ce logiciel. La première version stable devrait sortir aux alentours du **1 déc. 2026**
 > Tenez-vous informé des nouveautés sur l'Instagram du développeur ( @noaribote )
 
-# Vos données restent chez vous
+# Fonctionnalités
+
+- Voir et télécharger les **Stories**, les contenus **À la une**, les **Reels** et les **Publications** des comptes publics en **anonyme**.
+- Visualiser les informations des comptes et de leurs mises à jour.
+- Visualiser l'historique de l'ensemble de l'activité de votre compte depuis sa création. (Notes, stories, messages, commentaires, réels vues...)
+> Vous pouvez par exemple rechercher un message datant de plusieurs années dans une conversation même si l'utilisateur vous a bloqué et inversement.
+
+# Sécurité de vos données
 
 **Tout se passe sur votre ordinateur.** Vos données ne quittent jamais votre machine : elles ne sont ni envoyées sur internet, ni stockées sur un serveur, ni transmises à un tiers.
 
@@ -14,12 +21,6 @@ Version instable, problèmes potentiels et imprévisibilités sur certaines fonc
 - **Aucun transfert, donc aucune interception possible.** Sans circulation sur le réseau, il n’y a rien à intercepter ni à pirater à distance.
 - **Aucun compte requis, aucun suivi.** Nous ne collectons ni ne consultons vos informations.
 - **Vous décidez de tout.** Vous pouvez supprimer vos données à tout moment, simplement en les effaçant de votre machine.
-
-# Hors ligne
-
-**Le logiciel fonctionne aussi bien hors ligne.** Vous pouvez l’utiliser sans aucune connexion internet : toutes les fonctionnalités restent disponibles et vos données ne dépendent d’aucun serveur.
-
-**Pourquoi alors garder une connexion ?** Rester connecté permet le bon fonctionnement des outils en ligne du logiciel. Certains affichages peuvent être affectés. Cette connexion ne transmet pas vos données.
 
 # Lancer le projet (~10 minutes) :
 
