@@ -29,7 +29,7 @@ Version instable, problèmes potentiels et imprévisibilités sur certaines fonc
 3) Extrayez le projet de l'archive téléchargée
 4) Si vous êtes sur **Windows 10, 11**, lancez le fichier ``start.bat``. Autrement exécutez ``start.sh``
 
-Sur macOS et Linux, ouvrez un terminal dans le dossier du projet et lancez `./start.sh`. Si le système refuse son exécution, lancez d'abord `chmod +x start.sh` ou utilisez `bash start.sh`. Le script crée `.venv` pour isoler les dépendances Python. Consultez [start_faq.md](start_faq.md) en cas de problème.
+Sur macOS et Linux, ouvrez un terminal dans le dossier du projet et lancez `./start.sh`. Si le système refuse son exécution, lancez d'abord `chmod +x start.sh` ou utilisez `bash start.sh`. Le script crée `.venv` pour isoler les dépendances Python. Consultez [FAQ.md](FAQ.md) en cas de problème.
 
 [Plus d'informations concernant Electron.js](https://www.electronjs.org/)
 
