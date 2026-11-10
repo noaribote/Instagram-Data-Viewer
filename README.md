@@ -37,10 +37,11 @@ Sur macOS et Linux, ouvrez un terminal dans le dossier du projet et lancez `./st
 
 1) Ouvrez le terminal courant ou ouvrez-en un nouveau
 2) Exécutez la commande ``npm i --save-dev electron-builder`` dans ce dernier
-3) Exécutez la commande ``npm run build`` selon votre système d'exploitation :
-   - Windows : ``npm run build:win``
-   - MacOS : ``npm run build:mac``
-   - Linux : ``npm run build:linux``
+3) Exécutez la commande ``npm run build`` OU selon votre système d'exploitation :
+    - Windows : ``npm run build:win``
+    - MacOS : ``npm run build:mac``
+    - Linux : ``npm run build:linux``
+- Vous pouvez compiler le projet pour tous les OS simultanéments via la commande ``npx electron-builder --mac --win --linux``
 
 [Plus d'informations concernant la compilation](https://www.electron.build/)
 
