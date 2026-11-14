@@ -1,7 +1,7 @@
-# Logiciel en cours de développement !
+# Logiciel en phase de TEST
 
-Version instable, problèmes potentiels et imprévisibilités sur certaines fonctionnalités.
-- Veuillez attendre la sortie d'une **version stable** avant de lancer ce logiciel. La première version stable devrait sortir aux alentours du **1 déc. 2026**
+**Version stable** disponible. Néanmoins, des potentielles imprévisibilités peuvent survenir.
+- La première version officielle de **Instagram Data Viewer** vous sera disponible le **1er décembre 2026**.
 > Tenez-vous informé des nouveautés sur l'Instagram du développeur ( @noaribote )
 
 # Fonctionnalités
