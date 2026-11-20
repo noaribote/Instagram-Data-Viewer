@@ -4,6 +4,10 @@
 - La première version officielle de **Instagram Data Viewer** vous sera disponible le **1er décembre 2026**.
 > Tenez-vous informé des nouveautés sur l'Instagram du développeur ( @noaribote )
 
+[Consultez Instagram Data Viewer en version web](https://github.com/noaribote/Instagram-Data-Viewer-WEB)
+
+[Consultez le README d'Instagram Data Viewer en version web](https://github.com/noaribote/Instagram-Data-Viewer-WEB/blob/main/README.md)
+
 # Fonctionnalités
 
 - Voir et télécharger les **Stories**, les contenus **À la une**, les **Reels** et les **Publications** des comptes publics en **anonyme**.
