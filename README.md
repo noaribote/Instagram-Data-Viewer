@@ -9,13 +9,13 @@
 
 [Instagram du développeur](https://www.instagram.com/noaribote) · [FAQ de démarrage](FAQ.md)
 
-### Aperçu de la version bureau
-
 ![Capture version bureau](public/desktop.png) 
 
-### Aperçu de la version web
+### Aperçu de la version bureau
 
 ![Capture version web](public/web.png)
+
+### Aperçu de la version web
 
 </div>
 
@@ -37,7 +37,7 @@
 
 ## Pourquoi ce projet ?
 
-<!-- À compléter par l’auteur. -->
+Ce projet a été conçu pour répondre aux besoins des utilisateurs de pouvoir retrouver facilement des messages datant de plusieurs années, et de figer certains profils dans le temps. Après son annonce, il a créé un réel engouement ; ce qui a fortement encouragé son développement. 
 
 ## Fonctionnalités
 
