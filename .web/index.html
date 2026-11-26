@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0c1014">
+
+    <title>Instagram Data Viewer</title>
+
+    <link rel="stylesheet" href="assets/css/web.css">
+    <link rel="stylesheet" href="assets/css/source/media.css">
+  </head>
+
+  <body>
+    <div id="app-loader" role="status">
+      <img src="assets/images/logo.png" alt="">
+      <progress></progress>
+      <span>Préparation de votre espace local…</span>
+    </div>
+
+    <button
+      class="mobile-menu-toggle"
+      id="mobile-menu-toggle"
+      type="button"
+      aria-label="Ouvrir le menu"
+      aria-expanded="false"
+    >
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="app-layout">
+      <nav
+        class="app-sidebar"
+        id="app-sidebar"
+        aria-label="Navigation principale"
+      >
+        <button class="brand" id="home-button" type="button">
+          <img data-src="assets/images/logo.png" alt="">
+          <span>
+            <b>Instagram</b>
+            <strong>Data Viewer</strong>
+          </span>
+        </button>
+
+        <div class="nav-main">
+          <button class="nav-item active" id="dashboard-button" type="button">
+            <i class="fa-solid fa-house"></i>
+            Accueil
+          </button>
+          <button class="nav-item" id="import-button" type="button">
+            <i class="fa-solid fa-folder-plus"></i>
+            Ajouter des données
+          </button>
+          <button class="nav-item" id="filter-button" type="button">
+            <i class="fa-solid fa-filter"></i>
+            Filtrer les fichiers
+          </button>
+        </div>
+
+        <div class="nav-scroll">
+          <section class="sidebar-group" id="pinned-group" hidden>
+            <span>Épinglés</span>
+            <div id="pinned-list"></div>
+          </section>
+
+          <section class="sidebar-group">
+            <span>
+              Fichiers de données
+              <small id="file-count">0</small>
+            </span>
+            <div id="file-list" class="file-list"></div>
+          </section>
+        </div>
+
+        <footer class="sidebar-footer">
+          <button
+            id="cleanup-button"
+            class="nav-item"
+            type="button"
+            disabled
+          >
+            <i class="fa-solid fa-photo-film"></i>
+            Libérer l’espace
+            <strong id="storage-size">0 o</strong>
+          </button>
+          <p>Les données restent sur cet appareil.</p>
+          <span>© 2026 Instagram Data Viewer</span>
+        </footer>
+      </nav>
+
+      <main id="main-content">
+        <section id="dashboard-view" class="dashboard-view">
+          <header class="dashboard-header">
+            <p class="dashboard-eyebrow">INSTAGRAM DATA VIEWER</p>
+            <h1>Votre espace Instagram</h1>
+            <p>
+              Explorez vos données personnelles, conservées localement sur cet
+              appareil.
+            </p>
+          </header>
+
+          <div
+            class="index-status"
+            id="index-status"
+            role="status"
+            aria-live="polite"
+          >
+            <progress id="index-progress"></progress>
+            <span id="index-status-text">Ouverture du stockage local…</span>
+          </div>
+
+          <div class="home-actions">
+            <button type="button" data-page="stats">
+              <i class="fa-solid fa-chart-line"></i>
+              <strong>Statistiques du compte</strong>
+              <span>Amis, messages et activité</span>
+            </button>
+            <button type="button" data-page="crawler">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <strong>Autres utilisateurs</strong>
+              <span>Rechercher des profils publics</span>
+            </button>
+            <button type="button" data-page="contacts">
+              <i class="fa-solid fa-address-book"></i>
+              <strong>Liste de contacts</strong>
+              <span>Numéros, e-mails et mentions</span>
+            </button>
+            <button type="button" data-page="messages">
+              <i class="fa-solid fa-comments"></i>
+              <strong>Messages</strong>
+              <span>Parcourir vos conversations</span>
+            </button>
+            <button type="button" data-page="media">
+              <i class="fa-solid fa-images"></i>
+              <strong>Médias importés</strong>
+              <span>Voir et enregistrer vos photos et vidéos</span>
+            </button>
+          </div>
+
+          <section class="dashboard-search">
+            <label for="global-search">Rechercher dans tous les fichiers</label>
+            <input
+              id="global-search"
+              type="search"
+              placeholder="Nom, message, commentaire, date…"
+              autocomplete="off"
+            >
+            <p id="search-status">
+              La recherche s’effectue dans votre navigateur.
+            </p>
+            <div id="search-results"></div>
+          </section>
+
+          <div class="drop-target" id="drop-target">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>
+              <strong>Importer vos données Instagram</strong>
+              <small>
+                Sur ordinateur, vous pouvez aussi déposer un ZIP ou un dossier
+                décompressé.
+              </small>
+            </span>
+            <div class="drop-actions">
+              <button id="choose-files" type="button">Choisir un ZIP</button>
+              <button id="choose-folder" type="button">Choisir un dossier</button>
+            </div>
+          </div>
+
+          <input id="file-picker" type="file" accept=".zip,application/zip" hidden>
+          <input id="folder-picker" type="file" webkitdirectory multiple hidden>
+        </section>
+
+        <section id="page-view" class="web-page" hidden></section>
+
+        <section id="data-view" class="data-view" hidden>
+          <div class="data-toolbar">
+            <button id="data-back" type="button">
+              <i class="fa-solid fa-arrow-left"></i>
+              Retour
+            </button>
+            <div>
+              <button id="pin-current" type="button">
+                <i class="fa-solid fa-thumbtack"></i>
+                Épingler
+              </button>
+              <button id="delete-current" class="danger-button" type="button">
+                <i class="fa-solid fa-trash"></i>
+                Supprimer
+              </button>
+            </div>
+          </div>
+          <div id="json-content"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="filter-dialog" class="web-dialog">
+      <form method="dialog">
+        <header>
+          <h2>Filtrer les fichiers</h2>
+          <button value="cancel" aria-label="Fermer">×</button>
+        </header>
+        <div id="filter-options"></div>
+        <footer>
+          <button value="cancel">Annuler</button>
+          <button id="apply-filter" value="ok" class="primary-button">
+            Appliquer
+          </button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="progress-dialog" class="web-dialog">
+      <header><h2>Import des données</h2></header>
+      <p id="import-message">Préparation de l’import…</p>
+      <progress id="import-progress" max="100" value="0"></progress>
+      <p id="import-count"></p>
+      <button id="cancel-import" type="button">Annuler</button>
+    </dialog>
+
+    <dialog id="confirm-dialog" class="web-dialog">
+      <form method="dialog">
+        <header><h2 id="confirm-title">Confirmation</h2></header>
+        <p id="confirm-message"></p>
+        <footer>
+          <button value="cancel">Annuler</button>
+          <button id="confirm-action" value="ok" class="danger-button">
+            Confirmer
+          </button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="mobile-backdrop" hidden></div>
+
+    <script src="models/LocalDataModel.js"></script>
+    <script src="views/AppView.js"></script>
+    <script src="controllers/AppController.js"></script>
+  </body>
+</html>
