@@ -9,6 +9,14 @@
 
 [Instagram du développeur](https://www.instagram.com/noaribote) · [FAQ de démarrage](FAQ.md)
 
+### Aperçu de la version bureau
+
+![Capture version bureau](public/desktop.png) 
+
+### Aperçu de la version web
+
+![Capture version web](public/web.png)
+
 </div>
 
 ---
@@ -121,6 +129,9 @@ Les archives web sont associées au navigateur et à l’adresse du site. Elles 
 
 ```text
 .
+├── public/                     # Captures des deux interfaces
+│   ├── desktop.png              # Aperçu de la version bureau
+│   └── web.png                  # Aperçu de la version web
 ├── .web/                        # Interface navigateur et serveur HTTP/API local
 │   ├── assets/                  # Styles et images propres à l’interface web
 │   ├── controllers/             # Contrôleur de l’application web
