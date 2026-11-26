@@ -36,7 +36,7 @@
   },
   "keywords": [],
   "author": "RIBOTE--MORAL Noa",
-  "license": "ISC",
+  "license": "SEE LICENSE IN license.md",
   "type": "commonjs",
   "devDependencies": {
     "electron": "42.5.1",
