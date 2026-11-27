@@ -129,7 +129,7 @@ Les archives web sont associées au navigateur et à l’adresse du site. Elles 
 
 ```text
 .
-├── public/                     # Captures des deux interfaces
+├── public/                      # Captures des deux interfaces
 │   ├── desktop.png              # Aperçu de la version bureau
 │   └── web.png                  # Aperçu de la version web
 ├── .web/                        # Interface navigateur et serveur HTTP/API local
